@@ -1,0 +1,22 @@
+{% extends "topindex.html" %}
+{% block head %}
+{{super()}}
+{%endblock%}
+{%block content%}
+<div class="jumbotron text-center"><div class="container"><h2><b> Login </b></h2></div></div>
+<!-- Some of this is definitly stolen from CSAW red's ctf signin Sheet -->
+<div class="container">
+    <div class="row">
+      <div class="offset-md-2 col-md-8 pt-3 pb-3 text-center">
+		<form action="" method="post" name="login">
+			{{ form.hidden_tag() }}
+		<p>
+			Please Enter your Uname:<br>
+			{{ form.Uname(size=80) }} <br>
+		</p>
+		<p><input type="submit" value="Sign in"></p>
+		</form>
+	  </div>
+	</div>
+</div>        
+{%endblock%}
