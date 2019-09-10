@@ -1,0 +1,29 @@
+{% extends "topindex.html" %}
+{% block head %}
+{{super()}}
+{%endblock%}
+{%block content%}
+<div class="jumbotron text-center"><div class="container"><h2><b> Register </b></h2></div></div>
+<!-- Some of the styling is definitly stolen from CSAW red's ctf signin Sheet -->
+<div class="container">	
+	<form action="" method="post" name="register">
+		{{ form.hidden_tag() }}
+		<div class="form-group">
+			{{ form.username.label }}<br>
+			{{ form.username(class="form-control", placeholder="Username") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.password.label }}<br>
+			{{ form.password(class="form-control", placeholder="Password") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.email.label }}<br>
+			{{ form.email(class="form-control", placeholder="E-mail", type=email) }}<br>
+		</div>
+		<div>
+			<p> {{ form.agreement(class="") }} {{ form.agreement.label }}<br></p>
+		</div>
+		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
+ </form>
+ </div>
+{%endblock%}
