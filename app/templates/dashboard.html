@@ -1,0 +1,52 @@
+{% extends "topindex.html"%}
+{% block head %}
+{{super()}}
+<style>
+
+body {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+}
+
+#main {
+	display:flex;
+	flex:1;
+	}
+	
+#main > main_box {
+		flex: 1;
+		order: 2;
+	}
+	
+	#main > aside {
+		order 1;
+	}
+	main_box, aside {
+		padding: 1em;
+	}
+
+</style>
+{%endblock%}
+{%block content%}<body>
+<aside>
+ASDFASDFAAAA<br>
+SDF<br>
+ASDFASDFADF<br>
+ADSF<br>
+<aside>
+<main_box>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		{% for record in messages %}
+			{% for problem in record %}
+				{{ problem }}<br>
+				{{ problem.problem_name }} {{ problem.summary }} 
+			{% endfor %}
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+</main_box>
+
+</body>
+{%endblock%}

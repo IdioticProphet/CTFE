@@ -1,7 +1,6 @@
 class Config:
     DEBUG = True 
     import os
-    SECRET_KEY = os.urandom(32)
-
-    basedir = os.path.abspath(os.path.dirname(__file__))
-
+    SECRET_KEY = "SUPER SECRET TOKEN"#os.urandom(32)
+    #SESSION_COOKIE_SECURE = True
+    basedir = os.path.abspath
