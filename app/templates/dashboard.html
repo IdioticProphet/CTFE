@@ -2,51 +2,133 @@
 {% block head %}
 {{super()}}
 <style>
+			
+			.sidebar,
+			.content {
+				padding: 10px;
+			}
 
-body {
-	display: flex;
-	flex-direction: column;
-	margin: 0;
-}
+			.main-container{
+				font-size: 1.2em;
+				display: grid;
+				height: 80vh;
+				grid-template:
+					[row1-start] "left right" auto[row1-end]
+					/ 15% auto;
+				
+			}
+			
+			.left {
+				grid-area: left;
+			}
+			
+			.right {
+				padding: 20px;
+				grid-area: right;
+			}
+		
+			.container-asdf {
+				display: grid;
+				grid-template:
+					[row1-start] "title button" auto[row1-end]
+					[row2-start] "content button" auto[row2-end]
+					/ 90% auto;
+				<!--outline-style: solid;
+				outline-color: black; -->
+			    word-wrap: break-word;
+				word-break: break-all;
+				padding: 20px;
+				border-bottom:3px solid #f5f5f5;
+			}
+			.item-a {
+				grid-area: title;
+				place-self: start;
+				font-weight: bold;
+				color: black;
+			}
+			.item-b {
+				grid-area: content;
+				place-self: start;
+				font-size: .7em;
+				padding-left: .5in;
+			}
+			.item-c {
+				grid-area: button;
+				place-self: center;
+				font-size: 2em
+			}
+			
+			
+			
+			.modal {
+				text-align: center;
+			}
 
-#main {
-	display:flex;
-	flex:1;
-	}
-	
-#main > main_box {
-		flex: 1;
-		order: 2;
-	}
-	
-	#main > aside {
-		order 1;
-	}
-	main_box, aside {
-		padding: 1em;
-	}
+			@media screen and (min-width: 768px) { 
+				.modal:before {
+					display: inline-block;
+					vertical-align: middle;
+					content: " ";
+					height: 100%;
+				}
+			}
+
+			.modal-dialog {
+				display: inline-block;
+				text-align: left;
+				vertical-align: middle;
+			}
 
 </style>
 {%endblock%}
-{%block content%}<body>
-<aside>
-ASDFASDFAAAA<br>
-SDF<br>
-ASDFASDFADF<br>
-ADSF<br>
-<aside>
-<main_box>
+{%block content%}
+<body>
+<div class="main-container">
+	<div class="left">
+		<div class="jumbotron">
+			UNDER CONSTRUCTION
+		</div>
+	</div>
+	<div class="right">
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
-		{% for record in messages %}
+	{% for record in messages %}
 			{% for problem in record %}
-				{{ problem }}<br>
-				{{ problem.problem_name }} {{ problem.summary }} 
+				
+				<div class="container-asdf">
+					<div class="item-a">{{ problem.problem_name }}</div>
+					<div class="item-b">{{ problem.summary }}</div>
+					<div class="item-c"><button data-toggle="modal" data-target="#exampleModal" type="button" class="btn btn-info">Button</button></div>
+				</div>
+				
 			{% endfor %}
 		{% endfor %}
 	{% endif %}
 	{% endwith %}
-</main_box>
+	</div>
+</div>
+
+			<div class="Modals">
+				<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Modal title</h5> 
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						Stuff goes here...
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+					</div>
+					</div>
+				</div>
+				</div>
+			</div>
 
 </body>
 {%endblock%}
