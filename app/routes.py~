@@ -146,8 +146,8 @@ def dashboard():
 @app.route("/profile")
 def profile():
     return render_template('profile.html')
-
 @app.route("/api/problems")
+
 def app_api():
     sql_connection = SQL_Connect()
     sql_command = ("SELECT * FROM ctf_problems")

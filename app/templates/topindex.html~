@@ -79,7 +79,7 @@
       </nav>
       {% endblock %}
       <script src="{{ url_for('static', filename='js/jquery-3.3.1.slim.min.js') }}" ></script>
-      <script> window.jQuery || document.write(` <script src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
+      <script> window.jQuery || document.write(' <script src="{{ url_for('static' , filename=`js/jquery-slim.min.js`) }}"><\/script> ')</script>
       <script src="{{ url_for('static' , filename='js/bootstrap.bundle.min.js') }}"></script>
       <script type="text/javascript"  src="https:////getbootstrap.com/fdd0c88ebe3e8d05bb9847f1ae75bcb3aa7b16a3b1d94eb0026cc59dbb9e9fe4/inject.js"></script>
    </body>

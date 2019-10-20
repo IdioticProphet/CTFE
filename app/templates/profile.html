@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+Vue.component('button-thing', {
+	data: function () {
+		return {
+			text: "Hello"
+		}
+	},
+	template: '<button v-on:click="alert(text)">'
+})
+
+
+</script>
+
+</head>
+<body>
+<div id="component-demo">
+	<button-thing></button-thing>
+</div>
+<script>new Vue({ el: '#component-demo' })</script>
+</body>
+</html>

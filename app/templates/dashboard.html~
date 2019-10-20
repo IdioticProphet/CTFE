@@ -11,8 +11,7 @@ Vue.component('problem-button', {
 	delimiters: ["!!!", "!!!"],
 	data: function () {
 		return {
-			Button: this.unique_id,
-			buttontext: "Press Me!",
+			Button: this.unique_id 
 		}
 	},
 	methods: {
@@ -22,7 +21,7 @@ Vue.component('problem-button', {
 
 	},
 	props: ['unique_id'],
-	template: '<button v-on:click="do_thing(Button)" class="btn btn-primary" id="Button">!!! buttontext !!!</button>',
+	template: '<button v-on:click="do_thing(Button)" class="btn btn-primary">!!! Button !!!</button>',
 });
 
 
@@ -41,19 +40,20 @@ Vue.component('modal-maker',{
 
 		template: `
 					
-<div id="problem-modal" class="modal"  tabindex="-1" role="dialog">
-  <div class="modal-dialog">
+<div id="problem-modal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">!!! name !!!</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         !!! summary !!!
       </div>
       <div class="modal-footer">
-        <button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
+        <button type="button" class="btn btn-secondary">Close</button>
       </div>
     </div>
   </div>
@@ -62,7 +62,7 @@ Vue.component('modal-maker',{
 		`,
 		
 		created: function() {
-			this.fetchData(this.unique_id);
+			this.fetchData(this.button_id);
 		},
 		
 		methods: {
@@ -88,15 +88,10 @@ Vue.component('modal-maker',{
 		});
 
 function insert_modal(unique_id) {
-	document.getElementById('modal-div').innerHTML = `<modal-maker id='problem-modal' unique_id=${unique_id}></modal-maker>`;
-	new Vue({ el: `#problem-modal ` })
-	toggle_modal();
+	document.getElementById('modal-div').innerHTML = `<modal-maker id='modal-div${unique_id}' unique_id=${unique_id}></modal-maker>`;
+	new Vue({ el: `#modal-div${unique_id}` })	
 }
-function toggle_modal() {
-$(document).ready(function(){
-   $(`#problem-modal`).modal("toggle");
-  });
-}
+
 
 </script>
 
@@ -136,7 +131,7 @@ $(document).ready(function(){
 			.right {
 				grid-area: right;
 			}
-			
+		
 			.container-asdf {
 				display: grid;
 				grid-template:
@@ -170,32 +165,22 @@ $(document).ready(function(){
 			
 		
 
-			.modal {
-  text-align: center;
-}
-
-@media screen and (min-width: 768px) { 
-  .modal:before {
-    display: inline-block;
-    vertical-align: middle;
-    content: " ";
-    height: 100%;
-  }
-}
-
-.modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
-}
+			@media screen and (min-width: 768px) { 
+				.modal:before {
+					display: inline-block;
+					vertical-align: middle;
+					content: " ";
+					height: 100%;
+				}
+			}
 
 </style>
 {%endblock%}
 {%block content%}
 <body>
+
+
 <div id="app" class="main-container">
-<div id="modal-div">
-	</div>
 	<div class="left sidebar">
 	Under Construction
 	</div>
@@ -211,9 +196,7 @@ $(document).ready(function(){
 					<div class="item-c" id="item-c{{problem.unique_id}}">
 						<problem-button unique_id='{{ problem.unique_id }}'></problem-button>
 					</div>
-					<script>
-					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
-</script>
+					<script>new Vue({ el: "#item-c{{problem.unique_id}}"}) </script>
 				</div>
 				
 			{% endfor %}
@@ -221,6 +204,8 @@ $(document).ready(function(){
 	{% endif %}
 	{% endwith %}
 	</div>
+</div>
+<div id="modal-div">
 </div>
 </body>
 {%endblock%}
