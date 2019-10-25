@@ -2,6 +2,7 @@
 {% block head %}
 {{super()}}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for("static", filename="css/dashboard.css") }}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -52,9 +53,18 @@ Vue.component('modal-maker',{
       <div class="modal-body">
         !!! summary !!!
       </div>
-      <div class="modal-footer">
-        <button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
-      </div>
+	  <form action="" method="POST" name="flag" :id ="unique_id">
+      <div class="modal-footer flag-footer flag-form">
+		<div class="flag-left">
+
+		{{ form.flag(class="form-control girth", placeholder="flag") }} 
+		</div><div class="flag-right">
+		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
+		<button type="button" onclick="toggle_modal()" class="btn btn-secondary flag-right">Close</button>
+		</div>
+		{{ form.hidden_tag() }}
+		</div>
+	</form>
     </div>
   </div>
 </div>
@@ -100,96 +110,6 @@ $(document).ready(function(){
 
 </script>
 
-<style>
-			* {
-				box-sizing: border-box;
-			}
-			html, body {
-				margin: 0;
-				padding: 0;
-				font-family: sans-serif;
-				font-size: 1.1em;
-				text-align: center;
-			}
-			.sidebar,
-			.content {
-				padding: 10px;
-			}
-
-			.sidebar {
-				background: #F34A4E;
-			}
-			.main-container{
-				display: grid;
-				grid-template:
-					[row1-start] "left right" auto[row1-end]
-					/ 20% auto;
-					padding: 20px;
-					
-			}
-			
-			.left {
-				background: #F34A4E;
-				grid-area: left;
-			}
-			
-			.right {
-				grid-area: right;
-			}
-			
-			.container-asdf {
-				display: grid;
-				grid-template:
-					[row1-start] "title button" auto[row1-end]
-					[row2-start] "content button" auto[row2-end]
-					/ 90% auto;
-				<!--outline-style: solid;
-				outline-color: black; -->
-			    word-wrap: break-word;
-				word-break: break-all;
-				padding: 20px;
-				border-bottom:3px solid #f5f5f5;
-			}
-			.item-a {
-				grid-area: title;
-				place-self: start;
-				font-weight: bold;
-				color: black;
-			}
-			.item-b {
-				grid-area: content;
-				place-self: start;
-				font-size: .7em;
-				padding-left: .5in;
-			}
-			.item-c {
-				grid-area: button;
-				place-self: center;
-				font-size: 2em
-			}
-			
-		
-
-			.modal {
-  text-align: center;
-}
-
-@media screen and (min-width: 768px) { 
-  .modal:before {
-    display: inline-block;
-    vertical-align: middle;
-    content: " ";
-    height: 100%;
-  }
-}
-
-.modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
-}
-
-</style>
 {%endblock%}
 {%block content%}
 <body>

@@ -13,3 +13,8 @@ class RegisterForm(Form):
     email = StringField("Email", validators=[DataRequired()])
     agreement = BooleanField("I accept the terms and conditions.", validators=[DataRequired()])
     submit = SubmitField("Register")
+    
+class FlagForm(Form):
+    flag = StringField("Flag", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+    

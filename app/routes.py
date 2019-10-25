@@ -3,12 +3,13 @@ from flask import flash
 from flask import redirect
 from .forms import LoginForm
 from .forms import RegisterForm
+from .forms import FlagForm
 from app import app
 from .db import SQL_Connect
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask import session
-
+from .errors import *
 
 @app.route('/index')
 def index():
@@ -16,7 +17,7 @@ def index():
 
 @app.route('/')
 def ind():
-        return render_template('index.html')
+    return index()
 
 @app.route('/boomer')
 def boomer():
@@ -62,27 +63,14 @@ def register():
         if form.validate_on_submit():
                 sql_connection = SQL_Connect()
                 sql_command = ("SELECT name FROM users")
-                try:
-                        output_data = sql_connection.connection.query(sql_command)
-                except:
-                        flash("SQL_NOT_UP")
-                        sql_connection.disconnect()
-                        return redirect("/404")
-                
+                output_data = sql_connection.connection.query(sql_command)
                 all_names = [x.name.lower() for x in output_data]
-                
                 if form.username.data.lower() in all_names:
                         flash("Username is already taken!")
                         sql_connection.disconnect()
                         return redirect("/register")
-
                 sql_command = ("SELECT email FROM users")
-                try:
-                        output_data = sql_connection.connection.query(sql_command)
-                except:
-                        flash("SQL_NOT_UP")
-                        sql_connection.disconnect()
-                        return redirect("/404")
+                output_data = sql_connection.connection.query(sql_command)
                 all_emails = [x.email.lower() for x in output_data]
                 
                 if form.email.data.lower() in all_emails:
@@ -91,22 +79,11 @@ def register():
                         return redirect("/register")
                         
                 sql_command = ("SELECT * FROM users WHERE name=:username")
-                try:
-                        output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")
-                except:
-                        flash("SQL_NOT_UP")
-                        sql_connection.disconnect()
-                        return redirect("/404")
-                        
+                output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")   
                 if output_data is not None:
                         sql_command = ("INSERT INTO users(name, email, password) VALUES(:name, :email, :password)")
                         password = generate_password_hash(form.password.data)
-                        try:
-                                command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data, password=password)
-                        except:
-                                flash(all_names)
-                                sql_connection.disconnect()
-                                return redirect("/404")
+                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data, password=password)
                         flash(f"you have registered {form.username.data} you will get a confirmation email sent to {form.email.data}")
                         sql_connection.disconnect()
                         return redirect('index')
@@ -116,32 +93,31 @@ def register():
                         return redirect("/register")
         else:       
                 return render_template("register.html", title="Sign up", form=form)
-       
-@app.route("/dashboard")
+            
+@app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
-        try:
-                if session['username']:
-                        boolean=True
-        except:
+        form = FlagForm()
+        if 'username' not in session.keys():
                 flash("uh-oh you have to login first! Naughty boy.")
                 return redirect("/index")
 	#get ctf problems
         
-        sql_connection = SQL_Connect()
-        sql_command = ("SELECT * FROM ctf_problems")
-        output_data = sql_connection.connection.query(sql_command)
-        #except:
-        #        flash("SQL_NOT_UP" )
-        #        return redirect("/404")
-
-        if output_data is not None:
-            flash(output_data.all())
-            return render_template("dashboard.html")
+        if form.validate_on_submit():
+                flash(f"everything went OK {form.flag.data} {dir(form)}")
+                return redirect("/404")
         else:
-            flash("Awkward... where are the ctf problems...")
-            return redirect("/404")
-        flash("????????????? idk what went wrong")
-        return redirect("/404")
+                sql_connection = SQL_Connect()
+                sql_command = ("SELECT * FROM ctf_problems")
+                output_data = sql_connection.connection.query(sql_command)
+
+                if output_data is not None:
+                    flash(output_data.all())
+                    return render_template("dashboard.html", form=form)
+                else:
+                    flash("Awkward... where are the ctf problems...")
+                    return redirect("/404")
+                flash("????????????? idk what went wrong")
+                return redirect("/404")
 
 @app.route("/profile")
 def profile():
