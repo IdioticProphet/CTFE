@@ -1,0 +1,44 @@
+{% extends "topindex.html" %}
+{% block head %}
+{{super()}}
+<head>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('#input_id').on('change', function() {
+		alert("Nice");
+	});
+});
+</script>
+</head>
+{% endblock %}
+{% block body %}
+<body style="padding: 50px;">
+<form action="" method="POST" name="flag" enctype="multipart/form-data">
+
+		<div class="form-group">
+			{{ form.problem_name.label }}<br>
+			{{ form.problem_name(class="form-control", placeholder="Problem Name") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.summary.label }}<br>
+			{{ form.summary(style="", class="form-control", placeholder="Problem Summary") }} <br>
+		</div>
+		<div class="form-group", id="input_id">
+			{{ form.unique_id.label }}<br>
+			{{ form.unique_id(class="form-control", placeholder="Unique ID", type="Number") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.solution_flag.label }}<br>
+			{{ form.solution_flag(class="form-control", placeholder="Flag") }} <br>
+		</div>
+		<div class = "form-group">
+		{{ form.file_field(placeholder = "File") }}<br>
+		</div>
+		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
+		{{ form.hidden_tag() }}
+		</div>
+	</form>
+	</body>
+{% endblock %}

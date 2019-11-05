@@ -1,0 +1,48 @@
+{% extends "topindex.html" %}
+{% block head %}
+{{super()}}
+<style>
+.a {
+	text-align: center;
+}
+.grid-container {
+	display: grid;
+				grid-template:
+					[row1-start] "left middle right"[row1-end]
+					/ 20% auto 20%;
+			    word-wrap: break-word;
+				word-break: break-all;
+}
+.grid-left {
+	grid-area: left;
+	place-self: center;
+	color: black;
+}
+.grid-middle {
+	grid-area: middle;
+	place-self: center;
+}
+.grid-right {
+	grid-area: right;
+	place-self: center;
+}
+</style>
+{%endblock%}
+{%block content%}
+<div class="a jumbotron">
+<h2>Welcome to the Admin Dashboard</h2>
+</div>
+<div class="grid-container">
+<div class="grid-left">
+This is the left panel
+</div>
+<div class="grid-middle">
+<a href="/admin/create_problem" class="button btn btn-primary"> Create a New Problem </a>
+</div>
+<div class="grid-right">
+This is where idk happens
+</div>
+</div>
+<a class="button" href="/index"> Go back, im scared Ill break something </a>
+
+{% endblock %}

@@ -1,5 +1,4 @@
 import records
-from .errors import *
 
 class SQL_Connect:
 	def __init__(self, host="localhost", databasename="ctfengine", port=55555, user="root", password=""):

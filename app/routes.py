@@ -1,99 +1,29 @@
-from flask import render_template, jsonify
-from flask import flash
-from flask import redirect
-from .forms import LoginForm
-from .forms import RegisterForm
-from .forms import FlagForm
+from flask import Flask, render_template, jsonify, flash, redirect, session, request
+from .forms import LoginForm, RegisterForm, FlagForm, ProblemForm
 from app import app
 from .db import SQL_Connect
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
-from flask import session
-from .errors import *
+from werkzeug import secure_filename
+import os
+from .api.api import api
+from .basic_pages.pages import pages
+#from .error_pages.errors import error
 
-@app.route('/index')
-def index():
-        return render_template('index.html')
+app.register_blueprint(api)
+app.register_blueprint(pages)
+#app.register_blueprint(errors)
 
-@app.route('/')
-def ind():
-    return index()
-
-@app.route('/boomer')
-def boomer():
-        return render_template("boomer.html")
-
-@app.route('/login', methods=["GET", "POST"])
-def login():
-        form = LoginForm()
-        if form.validate_on_submit():
-                sql_connection = SQL_Connect()
-                if sql_connection.is_up():
-                        sql_command = "SELECT password FROM users WHERE name=:username"
-                        user_data = sql_connection.connection.query(sql_command, username=form.username.data)
-                        try:
-                                random_string = user_data[0]
-                        except:
-                                flash("Invalid Username!")
-                                return redirect("/login")
-                        if not check_password_hash(user_data[0].password, form.password.data):
-                                flash("Invalid Password.")
-                                return redirect("/login")
-                        session['username'] = form.username.data
-                        flash("Login Succeeded!")
-                        return redirect("/index")
-                else:
-                        flash("SQL Error 1")
-                        return redirect("/404")
-        return render_template("login.html", title="Sign in", form=form)
+def allowed_file(filename):
+        ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/amILoggedIn")
 def amI():
         flash(session)
         return render_template("logged_in.html")
 
-@app.route('/logout')
-def logout():
-    session.pop("username", None)
-    return "bye!"
-        
-@app.route('/register', methods=["POST", "GET"])
-def register():
-        form = RegisterForm()
-        if form.validate_on_submit():
-                sql_connection = SQL_Connect()
-                sql_command = ("SELECT name FROM users")
-                output_data = sql_connection.connection.query(sql_command)
-                all_names = [x.name.lower() for x in output_data]
-                if form.username.data.lower() in all_names:
-                        flash("Username is already taken!")
-                        sql_connection.disconnect()
-                        return redirect("/register")
-                sql_command = ("SELECT email FROM users")
-                output_data = sql_connection.connection.query(sql_command)
-                all_emails = [x.email.lower() for x in output_data]
-                
-                if form.email.data.lower() in all_emails:
-                        flash("Account already exists with that Email")
-                        sql_connection.disconnect()
-                        return redirect("/register")
-                        
-                sql_command = ("SELECT * FROM users WHERE name=:username")
-                output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")   
-                if output_data is not None:
-                        sql_command = ("INSERT INTO users(name, email, password) VALUES(:name, :email, :password)")
-                        password = generate_password_hash(form.password.data)
-                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data, password=password)
-                        flash(f"you have registered {form.username.data} you will get a confirmation email sent to {form.email.data}")
-                        sql_connection.disconnect()
-                        return redirect('index')
-                else:
-                        flash("Username is already taken")
-                        sql_connection.disconnect()
-                        return redirect("/register")
-        else:       
-                return render_template("register.html", title="Sign up", form=form)
-            
+   
 @app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
         form = FlagForm()
@@ -123,17 +53,56 @@ def dashboard():
 def profile():
     return render_template('profile.html')
 
-@app.route("/api/problems")
-def app_api():
-    sql_connection = SQL_Connect()
-    sql_command = ("SELECT * FROM ctf_problems")
-    try:
-        output_data = sql_connection.connection.query(sql_command)
-    except:
-        flash("SQL ERROR 1")
-        return redirect("/404") 
-    return(jsonify(data=output_data.as_dict()))
-    
+
+@app.route("/admin_dashboard")
+def admin_dash():
+        if "admin" in session.keys():
+                if not session["admin"]:
+                        flash("404 Page Not Found")
+                        return redirect("/404")
+                else:
+                        return render_template("admin_dash.html")
+        else:
+                flash("Page Not Found")
+                return redirect("/404")
+
+@app.route("/admin/create_problem", methods=["POST", "GET"])
+def create_problem():
+        if "admin" not in session.keys():
+                flash("404 Page Not Found")
+                return redirect("/404")
+        else:
+                form = ProblemForm()
+                print(form.validate_on_submit())
+                if form.validate_on_submit():
+                        UPLOAD_FOLDER = "./app/static/uploads/"
+                        f = request.files["file_field"]
+                        if allowed_file(f.filename):
+                                f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+                        return redirect("/404")
+                else:
+                        if not session["admin"]:
+                                flash("404 Page Not Found")
+                                return redirect("/404")
+                        else:
+                                return render_template("create_problem.html", form=form)
+
+
 @app.route("/404")
 def error():
     return render_template("404.html", title="Error, your Error is here!")
+
+@app.route("/token")
+def token():
+        return str(session)
+
+@app.errorhandler(404)  
+def not_found(error):
+    flash("Oh no that wasnt found!")
+    return redirect('/404'), 404
+
+@app.errorhandler(500)
+def error500(error):
+    flash(f"The error you got was {error.text}")
+    return redirect('/404'), 500
+

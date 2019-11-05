@@ -1,5 +1,9 @@
 class Config:
-	DEBUG = True
-	import os
-	SECRET_KEY = os.urandom(32)
-	basedir = os.path.abspath
+        import os
+        BASEDIR = os.path.abspath(os.path.dirname(__file__))
+        TOP_LEVEL_DIR = os.path.abspath(os.curdir)
+        UPLOAD_FOLDER = TOP_LEVEL_DIR + '/app/static/uploads/'
+        MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+        DEBUG = True
+        SECRET_KEY = os.urandom(32)
+        basedir = os.path.abspath

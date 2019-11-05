@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, BooleanField, PasswordField, SubmitField
+from wtforms import FileField, StringField, BooleanField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 
 class LoginForm(Form):
@@ -17,4 +17,11 @@ class RegisterForm(Form):
 class FlagForm(Form):
     flag = StringField("Flag", validators=[DataRequired()])
     submit = SubmitField("Submit")
-    
+
+class ProblemForm(Form):
+        problem_name = StringField("Problem Name", validators=[DataRequired()])
+        summary = StringField("Problem Summary")
+        unique_id = IntegerField("Unique ID", validators=[DataRequired()])
+        solution_flag = StringField("Flag", validators=[DataRequired()])
+        file_field = FileField("File Upload")
+        submit = SubmitField("Submit")
