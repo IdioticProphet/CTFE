@@ -13,3 +13,13 @@ def app_api():
         flash("SQL ERROR 1")
         return redirect("/404") 
     return(jsonify(data=output_data.as_dict()))
+
+@app.route("provision_number")
+def provision_number():
+    ...
+    #Planned feature for problem creation
+
+@api.route("/flag_submit")
+def flag_submit():
+    ...
+    # Do stuff here
