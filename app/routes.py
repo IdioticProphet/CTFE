@@ -7,11 +7,12 @@ import os
 from .api.api import api
 from .basic_pages.pages import pages
 from .admin_pages.admin_pages import admin
-#from .error_pages.errors import error
+
 
 app.register_blueprint(api)
 app.register_blueprint(pages)
 app.register_blueprint(admin)
+print(app.url_map)
 #app.register_blueprint(errors)
 
 @app.route("/amILoggedIn")
@@ -52,13 +53,13 @@ def profile():
 def error():
     return render_template("404.html", title="Error, your Error is here!")
 
-@app.errorhandler(404)  
-def not_found(error):
-    flash("Oh no that wasnt found!")
-    return redirect('/404'), 404
+#@app.errorhandler(404)  
+#def not_found(error):
+#    flash("Oh no that wasnt found!")
+#    return redirect('/404'), 404
 
-@app.errorhandler(500)
-def error500(error):
-    flash(f"The error you got was {error.text}")
-    return redirect('/404'), 500
+#@app.errorhandler(500)
+#def error500(error):
+#    flash(f"The error you got was {error.text}")
+#    return redirect('/404'), 500
 

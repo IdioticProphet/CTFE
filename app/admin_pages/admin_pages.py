@@ -1,13 +1,20 @@
-from flask import Blueprint
-from app import app
+from flask import Blueprint, flash, redirect, session
+from werkzeug import secure_filename
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 def allowed_file(filename):
         ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-@admin.route("/admin")
-@admin.route("/admin/dashboard")
+
+@admin.before_request
+def admin1():
+    if "admin" not in session.keys():
+        flash("Page Not Found 234523")
+        return redirect("/404")
+
+@admin.route("/")
+@admin.route("/dashboard")
 def admin_dash():
         if "admin" in session.keys():
                 if not session["admin"]:
@@ -23,7 +30,7 @@ def admin_dash():
 def token():
         return str(session)
 
-@admin.route("/admin/create_problem", methods=["POST", "GET"])
+@admin.route("/create_problem", methods=["POST", "GET"])
 def create_problem():
         if "admin" not in session.keys():
                 flash("404 Page Not Found")
@@ -43,7 +50,3 @@ def create_problem():
                                 return redirect("/404")
                         else:
                                 return render_template("create_problem.html", form=form)
-
-    
-    
-    

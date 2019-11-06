@@ -14,7 +14,7 @@ def app_api():
         return redirect("/404") 
     return(jsonify(data=output_data.as_dict()))
 
-@api.route("provision_number")
+@api.route("/provision_number")
 def provision_number():
     ...
     #Planned feature for problem creation

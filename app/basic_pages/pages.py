@@ -2,11 +2,9 @@ from flask import Flask, Blueprint, session, render_template, flash, redirect
 from ..forms import LoginForm, RegisterForm, FlagForm, ProblemForm
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
-from werkzeug import secure_filename
 from ..db import *
 
 pages = Blueprint("pages", __name__, url_prefix="/")
-
 
 @pages.route("/")
 @pages.route("/index")
