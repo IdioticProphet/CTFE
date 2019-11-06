@@ -11,7 +11,7 @@ from .admin_pages.admin_pages import admin
 
 app.register_blueprint(api)
 app.register_blueprint(pages)
-app.register_bluepeint(admin)
+app.register_blueprint(admin)
 #app.register_blueprint(errors)
 
 @app.route("/amILoggedIn")
