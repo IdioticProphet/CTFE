@@ -27,7 +27,7 @@ $(document).ready(function(){
 		</div>
 		<div class="form-group", id="input_id">
 			{{ form.unique_id.label }}<br>
-			{{ form.unique_id(class="form-control", placeholder="Unique ID", type="Number") }} <br>
+			{{ form.unique_id(readonly=True, class="form-control", placeholder="Unique ID", type="Number") }} <br>
 		</div>
 		<div class="form-group">
 			{{ form.solution_flag.label }}<br>
