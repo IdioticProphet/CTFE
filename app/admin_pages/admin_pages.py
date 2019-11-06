@@ -10,21 +10,14 @@ def allowed_file(filename):
 @admin.before_request
 def admin1():
     if "admin" not in session.keys():
-        flash("Page Not Found 234523")
+        flash("Page Not Found")
         return redirect("/404")
 
 @admin.route("/")
 @admin.route("/dashboard")
 def admin_dash():
-        if "admin" in session.keys():
-                if not session["admin"]:
-                        flash("404 Page Not Found")
-                        return redirect("/404")
-                else:
-                        return render_template("admin_dash.html")
-        else:
-                flash("Page Not Found")
-                return redirect("/404")
+        return render_template("admin_dash.html")
+
 
 @admin.route("/token")
 def token():
@@ -32,21 +25,13 @@ def token():
 
 @admin.route("/create_problem", methods=["POST", "GET"])
 def create_problem():
-        if "admin" not in session.keys():
-                flash("404 Page Not Found")
+        form = ProblemForm()
+        print(form.validate_on_submit())
+        if form.validate_on_submit():
+                UPLOAD_FOLDER = "./app/static/uploads/"
+                f = request.files["file_field"]
+                if allowed_file(f.filename):
+                        f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
                 return redirect("/404")
         else:
-                form = ProblemForm()
-                print(form.validate_on_submit())
-                if form.validate_on_submit():
-                        UPLOAD_FOLDER = "./app/static/uploads/"
-                        f = request.files["file_field"]
-                        if allowed_file(f.filename):
-                                f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-                        return redirect("/404")
-                else:
-                        if not session["admin"]:
-                                flash("404 Page Not Found")
-                                return redirect("/404")
-                        else:
-                                return render_template("create_problem.html", form=form)
+                return render_template("create_problem.html", form=form)
