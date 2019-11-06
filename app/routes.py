@@ -1,28 +1,23 @@
-from flask import Flask, render_template, jsonify, flash, redirect, session, request
-from .forms import LoginForm, RegisterForm, FlagForm, ProblemForm
+from flask import Flask, render_template, flash, redirect, session, request
+from .forms import ProblemForm
 from app import app
 from .db import SQL_Connect
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
 from werkzeug import secure_filename
 import os
 from .api.api import api
 from .basic_pages.pages import pages
+from .admin_pages.admin_pages import admin
 #from .error_pages.errors import error
 
 app.register_blueprint(api)
 app.register_blueprint(pages)
+app.register_blupeint(admin)
 #app.register_blueprint(errors)
-
-def allowed_file(filename):
-        ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/amILoggedIn")
 def amI():
         flash(session)
         return render_template("logged_in.html")
-
    
 @app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
@@ -53,48 +48,9 @@ def dashboard():
 def profile():
     return render_template('profile.html')
 
-
-@app.route("/admin_dashboard")
-def admin_dash():
-        if "admin" in session.keys():
-                if not session["admin"]:
-                        flash("404 Page Not Found")
-                        return redirect("/404")
-                else:
-                        return render_template("admin_dash.html")
-        else:
-                flash("Page Not Found")
-                return redirect("/404")
-
-@app.route("/admin/create_problem", methods=["POST", "GET"])
-def create_problem():
-        if "admin" not in session.keys():
-                flash("404 Page Not Found")
-                return redirect("/404")
-        else:
-                form = ProblemForm()
-                print(form.validate_on_submit())
-                if form.validate_on_submit():
-                        UPLOAD_FOLDER = "./app/static/uploads/"
-                        f = request.files["file_field"]
-                        if allowed_file(f.filename):
-                                f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-                        return redirect("/404")
-                else:
-                        if not session["admin"]:
-                                flash("404 Page Not Found")
-                                return redirect("/404")
-                        else:
-                                return render_template("create_problem.html", form=form)
-
-
 @app.route("/404")
 def error():
     return render_template("404.html", title="Error, your Error is here!")
-
-@app.route("/token")
-def token():
-        return str(session)
 
 @app.errorhandler(404)  
 def not_found(error):
