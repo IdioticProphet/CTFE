@@ -9,7 +9,7 @@ pages = Blueprint("pages", __name__, url_prefix="/")
 
 
 @pages.route("/")
-@pages.route("index")
+@pages.route("/index")
 def index():
         return render_template("index.html")
 
