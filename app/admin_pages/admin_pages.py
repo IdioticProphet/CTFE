@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, session
+from flask import Blueprint, flash, redirect, session, render_template
 from werkzeug import secure_filename
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
