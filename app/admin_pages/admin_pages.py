@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, session, render_template
 from werkzeug import secure_filename
+from ..forms import ProblemForm
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
