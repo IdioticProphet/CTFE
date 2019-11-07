@@ -1,7 +1,6 @@
 {% extends "topindex.html"%}
 {% block head %}
 {{super()}}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link rel="stylesheet" href="{{ url_for("static", filename="css/dashboard.css") }}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -109,8 +108,8 @@ $(document).ready(function(){
 }
 
 </script>
+{% endblock %}
 
-{%endblock%}
 {%block content%}
 <body>
 <div id="app" class="main-container">
@@ -141,6 +140,7 @@ $(document).ready(function(){
 	{% endif %}
 	{% endwith %}
 	</div>
+
 </div>
 </body>
 {%endblock%}

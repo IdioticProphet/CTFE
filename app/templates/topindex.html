@@ -10,7 +10,11 @@
       <title>CTF Landing Page</title>
       <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/starter-template/">
       <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" crossorigin="anonymous">
-	  <link href="{{ url_for('static', filename='css/starter-template.css') }}" rel="stylesheet">
+      <link href="{{ url_for('static', filename='css/starter-template.css') }}" rel="stylesheet">
+      <script src="{{ url_for('static', filename='js/jquery-3.3.1.slim.min.js') }}" ></script>
+      <script> window.jQuery || document.write(` <script src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
+      <script src="{{ url_for('static' , filename='js/bootstrap.bundle.min.js') }}"></script>
+      <script type="text/javascript"  src="https:////getbootstrap.com/fdd0c88ebe3e8d05bb9847f1ae75bcb3aa7b16a3b1d94eb0026cc59dbb9e9fe4/inject.js"></script>
       <style>
          .bd-placeholder-img {
          font-size: 1.125rem;
@@ -26,14 +30,20 @@
          }
          }
       </style>
-      <!-- Custom styles for this template -->
-      
       {% endblock %}
    </head>
+ 
+
    <body>
       {% block body %}
-      {% block navbar %}
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+	  
+      {%endblock%}
+   </body>
+   {% block content %}
+   {% endblock %}
+   
+   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+{%block nav%}
          <a class="navbar-brand" href="/">HHS-CTF</a>
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
@@ -41,13 +51,14 @@
          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
             <ul class="navbar-nav mr-auto">
                <li class="nav-item active">
-                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                  <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                </li>
                <li class="nav-item">
-                  <a class="nav-link" href="https://google.com">Link</a>
+                  {% if session["username"] %}
+                  <a class="nav-link" href="/dashboard">Dashboard</a>
+                  {% endif %}
                </li>
                <li class="nav-item">
-                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                </li>
                <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
@@ -77,14 +88,7 @@
             </ul>
             {% endif %}
          </div>
-      </nav>
-      {% endblock %}
-      <script src="{{ url_for('static', filename='js/jquery-3.3.1.slim.min.js') }}" ></script>
-      <script> window.jQuery || document.write(` <script src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
-      <script src="{{ url_for('static' , filename='js/bootstrap.bundle.min.js') }}"></script>
-      <script type="text/javascript"  src="https:////getbootstrap.com/fdd0c88ebe3e8d05bb9847f1ae75bcb3aa7b16a3b1d94eb0026cc59dbb9e9fe4/inject.js"></script>
-   </body>
-   {%endblock%}
-   {% block content %}
-   {% endblock %}
+      </nav> 
+ {%endblock%}
 </html>
+

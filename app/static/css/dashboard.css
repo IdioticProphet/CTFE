@@ -1,12 +1,17 @@
 			* {
 				box-sizing: border-box;
 			}
-			html, body {
+			html {
 				margin: 0;
-				padding: 0;
-				font-family: sans-serif;
-				font-size: 1.1em;
 				text-align: center;
+			}
+			body {
+				padding-top: 65px;
+				margin: 0;
+				text-align: center;
+			}
+			head {
+			grid-area: top;
 			}
 			.sidebar,
 			.content {
@@ -19,22 +24,30 @@
 			.main-container{
 				display: grid;
 				grid-template:
-					[row1-start] "left right" auto[row1-end]
+					[row1-start] "ttop ttop" auto[row1-end]
+					[row2-start] "left right" auto[row2-end]
 					/ 20% auto;
 					padding: 20px;
 					
 			}
-			
+
+			.ttop {
+				grid-area: ttop;
+			}
+
 			.left {
+				font-size: 1.0em;
 				background: #F34A4E;
 				grid-area: left;
 			}
 			
 			.right {
+				font-size: 1.0em;
 				grid-area: right;
 			}
 			
 			.flag-form {
+				font-size: 1.0em;
 				display: grid;
 				grid-template:
 					[row1-start] "left right"[row1-end]
@@ -43,6 +56,7 @@
 
 			}
 			.flag-left {
+				font-size: 1.0em;
 				grid-area: left;
 				place-self: center;
 				justify-content: space-evenly;
@@ -50,6 +64,7 @@
 			}
 			
 			.flag-right {
+				font-size: 1.0em;
 				grid-area: right;
 				place-self: center;
 				justify-content: space-evenly;
@@ -60,6 +75,7 @@
 				width: 100%;
 			}
 			.container-asdf {
+				font-size: 1.0em;
 				display: grid;
 				grid-template:
 					[row1-start] "title button" auto[row1-end]
@@ -73,18 +89,21 @@
 				border-bottom:3px solid #f5f5f5;
 			}
 			.item-a {
+				font-size: 1em;
 				grid-area: title;
 				place-self: start;
 				font-weight: bold;
 				color: black;
 			}
 			.item-b {
+				font-size: 1.0em;
 				grid-area: content;
 				place-self: start;
 				font-size: .7em;
 				padding-left: .5in;
 			}
 			.item-c {
+				font-size: 1.0em;
 				grid-area: button;
 				place-self: center;
 				font-size: 2em
@@ -98,6 +117,7 @@
 
 @media screen and (min-width: 768px) { 
   .modal:before {
+    font-size: 1.0em;
     display: inline-block;
     vertical-align: middle;
     content: " ";
@@ -106,6 +126,7 @@
 }
 
 .modal-dialog {
+  font-size: 1.0em;
   display: inline-block;
   text-align: left;
   vertical-align: middle;

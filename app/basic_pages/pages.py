@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, session, render_template, flash, redirect
+from flask import Flask, Blueprint, session, render_template, flash, redirect, current_app
 from ..forms import LoginForm, RegisterForm, FlagForm, ProblemForm
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -33,6 +33,9 @@ def login():
                         data.as_dict()[0]["is_admin"]
                         if data.as_dict()[0]["is_admin"] == 1:
                                 session["admin"] = True
+                        else:
+                                session["admin"] = False
+                        current_app.logger.info(f"{form.username.data} logged in successfully")
                         flash("Login Succeeded!")
                         return redirect("/")
                 else:

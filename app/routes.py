@@ -1,5 +1,5 @@
 from flask import Flask, render_template, flash, redirect, session, request
-from .forms import ProblemForm
+from .forms import ProblemForm, FlagForm
 from app import app
 from .db import SQL_Connect
 from werkzeug import secure_filename
