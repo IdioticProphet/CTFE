@@ -7,8 +7,9 @@
 {% block body %}
 
 <body>
-<h2 class="jumbotron"> Create a Team </h2>
+<h2 class="jumbotron text-center"> Create a Team </h2>
 
+<div class="container">
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
 		<div class="alert alert-danger">
@@ -18,6 +19,7 @@
 		</div>
 	{% endif %}
 {% endwith %}
+</div>
 <form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data" style="padding: 75px;">
 		<div class="form-group">
 			{{ form.new_team_name.label }}<br>
