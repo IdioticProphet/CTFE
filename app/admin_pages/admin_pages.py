@@ -10,7 +10,7 @@ def allowed_file(filename):
 
 @admin.before_request
 def admin1():
-    if "admin" not in session.keys():
+    if not session["admin"]:
         flash("Page Not Found")
         return redirect("/404")
 
@@ -27,7 +27,6 @@ def token():
 @admin.route("/create_problem", methods=["POST", "GET"])
 def create_problem():
         form = ProblemForm()
-        print(form.validate_on_submit())
         if form.validate_on_submit():
                 UPLOAD_FOLDER = "./app/static/uploads/"
                 f = request.files["file_field"]

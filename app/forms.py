@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import FileField, StringField, BooleanField, PasswordField, SubmitField, IntegerField
+from wtforms import TextAreaField, FileField, StringField, BooleanField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 
 class LoginForm(Form):
@@ -20,8 +20,19 @@ class FlagForm(Form):
 
 class ProblemForm(Form):
         problem_name = StringField("Problem Name", validators=[DataRequired()])
-        summary = StringField("Problem Summary")
+        summary = TextAreaField("Problem Summary")
         unique_id = IntegerField("Unique ID", validators=[DataRequired()])
         solution_flag = StringField("Flag", validators=[DataRequired()])
         file_field = FileField("File Upload")
         submit = SubmitField("Submit")
+
+class TeamForm(Form):
+        new_team_name = StringField("Team Name", validators=[DataRequired()])
+        new_team_password = StringField("Password", validators=[DataRequired()])
+        submit = SubmitField("Submit")
+
+class ChangeTeamForm(Form):
+        team_id = IntegerField("Team ID")
+        team_password = StringField("Password to Join")
+        submit = SubmitField("Submit")
+        

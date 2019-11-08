@@ -1,0 +1,35 @@
+{% extends "topindex.html" %}
+{% block head %}
+{{super()}}
+<head>
+</head>
+{% endblock %}
+{% block body %}
+
+<body>
+<h2 class="jumbotron"> Join A Team </h2>
+
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		<div class="alert alert-danger">
+			{% for message in messages %}
+			{{ message }}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endwith %}
+<form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data" style="padding: 75px;">
+		<div class="form-group">
+			{{ form.team_id.label }}<br>
+			{{ form.team_id(class="form-control", placeholder="Team ID") }} <br>
+		</div>
+		<div class = "form-group">
+		{{ form.team_password.label }} <br>
+		{{ form.team_password(class="form-control", placeholder="Team Password") }}<br>
+		</div>
+		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
+		{{ form.hidden_tag() }}
+		</div>
+	</form>
+</body>
+{% endblock %}

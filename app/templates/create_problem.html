@@ -2,7 +2,6 @@
 {% block head %}
 {{super()}}
 <head>
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -10,12 +9,36 @@ $(document).ready(function(){
 		alert("Nice");
 	});
 });
+
+function ajax_call() {
+		$.ajax({url: "../api/provision_number", success: function(result){
+			number = result.data[0].ID+1;
+			var unid = document.getElementById('unique_id');
+			unid.value = number
+		}});
+};
+
+$(document).ready(function(){
+	ajax_call();
+});
+
+$("#CoolForm").submit(function() {
+	ajax_call();
+	return true;
+});
+
 </script>
+<style>
+#cent {
+  padding:100px;
+}
+</style>
 </head>
 {% endblock %}
 {% block body %}
-<body style="padding-top: 70px; padding-left: 35px; padding-right: 35px; padding-bottom: 35px;">
-<form action="" method="POST" name="flag" enctype="multipart/form-data">
+<body id="cent">
+
+<form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data">
 
 		<div class="form-group">
 			{{ form.problem_name.label }}<br>

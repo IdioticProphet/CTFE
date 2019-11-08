@@ -30,12 +30,15 @@ def login():
                         session["username"] = form.username.data
                         sql_command = "SELECT is_admin from users WHERE name=:username"
                         data = sql_connection.connection.query(sql_command, username=form.username.data)
-                        data.as_dict()[0]["is_admin"]
-                        if data.as_dict()[0]["is_admin"] == 1:
+                        if data.first().is_admin == 1:
                                 session["admin"] = True
                         else:
                                 session["admin"] = False
-                        current_app.logger.info(f"{form.username.data} logged in successfully")
+                        sql_command = "SELECT team_id FROM users WHERE name=:username"
+                        data = sql_connection.connection.query(sql_command, username=form.username.data)
+                        if data.first().team_id is not None:
+                                session["team_id"] = data.first().team_id
+                        current_app.logger.info(f"{form.username.data} logged in successfully, with team id {data.first().team_id}")
                         flash("Login Succeeded!")
                         return redirect("/")
                 else:
@@ -84,6 +87,36 @@ def register():
                         return redirect("/register")
         else:       
                 return render_template("register.html", title="Sign up", form=form)
+
+@pages.route("/dashboard", methods=["POST", "GET"])
+def dashboard():
+        form = FlagForm()
+
+        if "username" not in session.keys():
+                flash("uh-oh you have to login first! Naughty boy.")
+                return redirect("/index")
+	#get ctf problems
+        
+        if form.validate_on_submit():
+                flash(f"everything went OK {form.flag.data} {dir(form)}")
+                return redirect("/404")
+        else:
+                if session["team_id"] == 0:
+                        flash("You have to create or join a team before you solve any problems!")
+                        return redirect("/index")
+                sql_connection = SQL_Connect()
+                sql_command = ("SELECT * FROM ctf_problems")
+                output_data = sql_connection.connection.query(sql_command)
+                if output_data is not None:
+                    flash(output_data.all())
+                    return render_template("dashboard.html", form=form)
+                else:
+                    flash("Awkward... where are the ctf problems...")
+                    return redirect("/404")
+                flash("????????????? idk what went wrong")
+                return redirect("/404")
+
+
 
 
 
