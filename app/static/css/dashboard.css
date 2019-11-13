@@ -39,8 +39,18 @@
 				font-size: 1.0em;
 				background: #F34A4E;
 				grid-area: left;
+				float: up;
 			}
 			
+			.filterItem {
+				display: none;
+			}
+			
+			.show {
+				display: grid; 
+			}
+			
+
 			.right {
 				font-size: 1.0em;
 				grid-area: right;
@@ -76,7 +86,6 @@
 			}
 			.container-asdf {
 				font-size: 1.0em;
-				display: grid;
 				grid-template:
 					[row1-start] "title button" auto[row1-end]
 					[row2-start] "content button" auto[row2-end]

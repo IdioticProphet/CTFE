@@ -58,6 +58,7 @@ Vue.component('modal-maker',{
 		<div class="flag-left">
 
 		{{ form.flag(class="form-control girth", placeholder="flag") }} 
+		{{ form.unique_id(type="hidden") }}
 		</div><div class="flag-right">
 		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
 		<button type="button" onclick="toggle_modal()" class="btn btn-secondary flag-right">Close</button>
@@ -100,6 +101,7 @@ Vue.component('modal-maker',{
 function insert_modal(unique_id) {
 	document.getElementById('modal-div').innerHTML = `<modal-maker id='problem-modal' unique_id=${unique_id}></modal-maker>`;
 	new Vue({ el: `#problem-modal ` })
+	fill_un_id(unique_id);
 	toggle_modal();
 }
 function toggle_modal() {
@@ -108,11 +110,35 @@ $(document).ready(function(){
   });
 }
 
+function fill_un_id(number) {
+	var place = document.getElementById('unique_id');
+	place.value = number;
+}
+
+function filterSelection(c) {
+	var element_array, i;
+	element_array = document.getElementsByClassName("filterItem")
+	if (c == "all") c="";
+	for (i=0; i < element_array.length; i++) {
+		removeClass(element_array[i], "show");
+		if (element_array[i].className.indexOf(c) > -1) addClass(element_array[i], "show");
+	}
+}
+
+function addClass(element, name_to_add){
+	element.classList.add(name_to_add);
+}
+
+function removeClass(element, name_to_remove){
+	element.classList.remove(name_to_remove);
+}
 </script>
 <style>
+
 .modal-backdrop.fade, .modal-backdrop.fade.in {
          opacity: 0.7 !important;
     }
+	
 </style>
 {% endblock %}
 
@@ -122,15 +148,18 @@ $(document).ready(function(){
 <div id="modal-div">
 	</div>
 	<div class="left sidebar">
-	Under Construction
+		<div id="myBtnContainer">
+	<button class="btn active" onclick="filterSelection('all')"> Show all</button>
+	<button class="btn" onclick="filterSelection('Default')"> Default</button>
+	<button class="btn" onclick="filterSelection('Basic')"> Basic</button>
+	</div>
 	</div>
 	<div class="right">
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	{% for record in messages %}
 			{% for problem in record %}
-				
-				<div class="container-asdf">
+				<div class="container-asdf filterItem {{problem.category}}">
 					<div class="item-a">{{ problem.problem_name }}</div>
 					<div class="item-b">{{ problem.summary }}</div>
 					<div class="item-c" id="item-c{{problem.unique_id}}">
@@ -138,7 +167,7 @@ $(document).ready(function(){
 					</div>
 					<script>
 					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
-</script>
+					</script>
 				</div>
 				
 			{% endfor %}

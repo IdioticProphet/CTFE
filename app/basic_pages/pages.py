@@ -98,7 +98,7 @@ def dashboard():
 	#get ctf problems
         
         if form.validate_on_submit():
-                flash(f"everything went OK {form.flag.data} {dir(form)}")
+                flash(f"{form.flag.data} {session['team_id']} {form.unique_id.data}")
                 return redirect("/404")
         else:
                 if session["team_id"] == 0:

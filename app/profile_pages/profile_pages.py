@@ -30,7 +30,8 @@ def join_team():
                 sql_command = "SELECT members FROM teams where id=:identification"
                 data = sql_connection.connection.query(sql_command, identification=form.team_id.data)
                 member_list = data.first().members
-                member_list += f" {session['username']}"
+                if session["username"] not in member_list.split():
+                    member_list += f" {session['username']}"
                 sql_command = "UPDATE teams SET members=:new_list"
                 sql_connection.connection.query(sql_command, new_list=member_list)
                 sql_command = "UPDATE users SET team_id=:new_id"
@@ -46,7 +47,6 @@ def join_team():
     else:
         return render_template("join_team_form.html", form=form)
         
-    # if user is not logged in
 
 @profile_blueprint.route("/create_team", methods=["GET", "POST"])
 def create_team():
