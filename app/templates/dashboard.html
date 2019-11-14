@@ -1,11 +1,9 @@
 {% extends "topindex.html"%}
 {% block head %}
 {{super()}}
-<link rel="stylesheet" href="{{ url_for("static", filename="css/dashboard.css") }}">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for("static", filename="css/dashboard.css") }}">
+
 <script>
 
 Vue.component('problem-button', {
@@ -132,6 +130,9 @@ function addClass(element, name_to_add){
 function removeClass(element, name_to_remove){
 	element.classList.remove(name_to_remove);
 }
+$(document).ready(function () {
+filterSelection("all");
+});
 </script>
 <style>
 
@@ -141,12 +142,9 @@ function removeClass(element, name_to_remove){
 	
 </style>
 {% endblock %}
-
+<body class="d-flex flex-column h-100">
 {%block content%}
-<body>
 <div id="app" class="main-container">
-<div id="modal-div">
-	</div>
 	<div class="left sidebar">
 		<div id="myBtnContainer">
 	<button class="btn active" onclick="filterSelection('all')"> Show all</button>
@@ -175,8 +173,11 @@ function removeClass(element, name_to_remove){
 	{% endif %}
 	{% endwith %}
 	</div>
-
 </div>
-</body>
+<div id="modal-div">
+	</div>
 {%endblock%}
+
+</body>
+
 

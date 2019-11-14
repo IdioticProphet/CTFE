@@ -6,9 +6,9 @@
 				text-align: center;
 			}
 			body {
-				padding-top: 65px;
 				margin: 0;
 				text-align: center;
+				height: 100%;
 			}
 			head {
 			grid-area: top;
@@ -24,16 +24,16 @@
 			.main-container{
 				display: grid;
 				grid-template:
-					[row1-start] "ttop ttop" auto[row1-end]
-					[row2-start] "left right" auto[row2-end]
+					[row1-start] "left right" auto[row1-end]
 					/ 20% auto;
-					padding: 20px;
-					
+				padding-right: 20px;
+				padding-left: 20px;
+				padding-bottom: 35px;
+				position: fixed;
+				height: 100%;
+				width: 100%;
 			}
 
-			.ttop {
-				grid-area: ttop;
-			}
 
 			.left {
 				font-size: 1.0em;

@@ -4,18 +4,30 @@
       {% block head %}
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <meta name="description" content="">
-      <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-      <meta name="generator" content="Jekyll v3.8.5">
       <title>CTF Landing Page</title>
-      <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/starter-template/">
-      <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" crossorigin="anonymous">
-      <link href="{{ url_for('static', filename='css/starter-template.css') }}" rel="stylesheet">
-      <script src="{{ url_for('static', filename='js/jquery-3.3.1.slim.min.js') }}" ></script>
-      <script> window.jQuery || document.write(` <script src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
-      <script src="{{ url_for('static' , filename='js/bootstrap.bundle.min.js') }}"></script>
-      <script type="text/javascript"  src="https:////getbootstrap.com/fdd0c88ebe3e8d05bb9847f1ae75bcb3aa7b16a3b1d94eb0026cc59dbb9e9fe4/inject.js"></script>
+	  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">       
+	  <script> window.jQuery || document.write(` <script src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
+      
       <style>
+	  html {
+  position: relative;
+  min-height: 100%;
+		}
+body {
+  margin-bottom: 60px; /* Margin bottom by footer height */
+  padding-top: 56px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
          .bd-placeholder-img {
          font-size: 1.125rem;
          text-anchor: middle;
@@ -32,18 +44,9 @@
       </style>
       {% endblock %}
    </head>
- 
-
-   <body>
-      {% block body %}
-	  
-      {%endblock%}
-   </body>
-   {% block content %}
-   {% endblock %}
    
-   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-{%block nav%}
+   <nav style="margin-bottom: 20px" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+{%block body%}
          <a class="navbar-brand" href="/">HHS-CTF</a>
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
@@ -89,6 +92,13 @@
             {% endif %}
          </div>
       </nav> 
+   {% block content %}
+   {% endblock %}
+   <footer class="footer">
+  <div class="container">
+    <span class="text-muted">HHSCyber CTF Platform Development Version</span>
+  </div>
+</footer>
  {%endblock%}
 </html>
 
