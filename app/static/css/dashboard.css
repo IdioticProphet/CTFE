@@ -24,22 +24,32 @@
 			.main-container{
 				display: grid;
 				grid-template:
-					[row1-start] "left right" auto[row1-end]
-					/ 20% auto;
+					[row1-start] "left middle right" auto[row1-end]
+					/ 20% 60% auto;
 				padding-right: 20px;
-				padding-left: 20px;
+				
 				padding-bottom: 35px;
 				position: fixed;
 				height: 100%;
 				width: 100%;
 			}
 
-
+			.right {
+				font-size: 1.0em;
+				grid-area: right;
+				float: middle;
+			}
+			
 			.left {
 				font-size: 1.0em;
 				background: #F34A4E;
 				grid-area: left;
 				float: up;
+			}
+
+			.middle {
+				font-size: 1.0em;
+				grid-area: middle;
 			}
 			
 			.filterItem {
@@ -50,18 +60,12 @@
 				display: grid; 
 			}
 			
-
-			.right {
-				font-size: 1.0em;
-				grid-area: right;
-			}
-			
 			.flag-form {
 				font-size: 1.0em;
 				display: grid;
 				grid-template:
 					[row1-start] "left right"[row1-end]
-					/ 66% auto;
+					/ 60% auto;
 				padding: 20px;
 
 			}
@@ -89,7 +93,7 @@
 				grid-template:
 					[row1-start] "title button" auto[row1-end]
 					[row2-start] "content button" auto[row2-end]
-					/ 90% auto;
+					/ 80% auto;
 				<!--outline-style: solid;
 				outline-color: black; -->
 			    word-wrap: break-word;
