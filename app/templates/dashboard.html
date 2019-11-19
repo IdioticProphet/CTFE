@@ -20,8 +20,13 @@ Vue.component('problem-button', {
 		}
 
 	},
-	props: ['unique_id'],
-	template: '<button v-on:click="do_thing(Button)" class="btn btn-primary" id="Button">!!! buttontext !!!</button>',
+	props: ['unique_id', 'problem_name', 'problem_summary'],
+	template: `
+	<button v-on:click="do_thing(Button)" class="item-c-button btn btn-primary" id="Button">
+		<div>!!! problem_name !!!</div><br> 
+		<div>!!! problem_summary !!!</div><br>
+	</button>
+	`
 });
 
 
@@ -54,7 +59,6 @@ Vue.component('modal-maker',{
 	  <form action="" method="POST" name="flag" :id ="unique_id">
       <div class="modal-footer flag-footer flag-form">
 		<div class="flag-left">
-
 		{{ form.flag(class="form-control girth", placeholder="flag") }} 
 		{{ form.unique_id(type="hidden") }}
 		</div><div class="flag-right">
@@ -89,6 +93,7 @@ Vue.component('modal-maker',{
 							if (data[i].unique_id == button_id) {
 								this.name = data[i].problem_name;
 								this.summary = data[i].summary;
+								
 							}
 						}
 					})
@@ -135,6 +140,16 @@ filterSelection("all");
 });
 </script>
 <style>
+.challenge-entry {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 150px;
+  height: 150px;
+  float: left;
+  background-color: white;
+ <!-- outline: 1px solid black;-->
+  position:relative;
+}
 
 .modal-backdrop.fade, .modal-backdrop.fade.in {
          opacity: 0.7 !important;
@@ -142,13 +157,15 @@ filterSelection("all");
 	
 </style>
 {% endblock %}
-<body class="d-flex flex-column h-100">
+<body>
 {%block content%}
-<div id="app" class="main-container">
+<div id="modal-div">
+	</div>
+<div id="app" class="flex-container">
 	<div class="left sidebar">
 		<div id="myBtnContainer">
 	<button class="btn active" onclick="filterSelection('all')"> Show all</button>
-	<button class="btn" onclick="filterSelection('Default')"> Default</button>
+	<button class="btn" onclick="filterSelection('Advanced')"> Default</button>
 	<button class="btn" onclick="filterSelection('Basic')"> Basic</button>
 	</div>
 	</div>
@@ -157,12 +174,13 @@ filterSelection("all");
 	{% if messages %}
 	{% for record in messages %}
 			{% for problem in record %}
-				<div class="container-asdf filterItem {{problem.category}}">
-					<div class="item-a">{{ problem.problem_name }}</div>
-					<div class="item-b">{{ problem.summary }}</div>
+				<div class="challenge-entry filterItem {{problem.category}}">
+						<!--<div class="item-a">{{ problem.problem_name }}</div>
+						<div class="item-b">{{ problem.short_summary }}</div>-->
 					<div class="item-c" id="item-c{{problem.unique_id}}">
-						<problem-button unique_id='{{ problem.unique_id }}'></problem-button>
+					<problem-button unique_id='{{ problem.unique_id }}' problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
 					</div>
+					
 					<script>
 					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
 					</script>
@@ -173,12 +191,10 @@ filterSelection("all");
 	{% endif %}
 	{% endwith %}
 	</div>
-	<div class="container right">
+	<div class="right">
 		<h4>Scoreboard:</h4>
 	</div>
 </div>
-<div id="modal-div">
-	</div>
 {%endblock%}
 
 </body>

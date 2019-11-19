@@ -21,6 +21,7 @@ class FlagForm(Form):
 
 class ProblemForm(Form):
         problem_name = StringField("Problem Name", validators=[DataRequired()])
+        short_summary = StringField("Short Summary", validators=[DataRequired()])
         summary = TextAreaField("Problem Summary", validators=[DataRequired()])
         unique_id = IntegerField("Unique ID", validators=[DataRequired()])
         point_value = IntegerField("Point Value", validators=[DataRequired()])

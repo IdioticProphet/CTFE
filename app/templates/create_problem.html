@@ -44,10 +44,25 @@ $("#coolButton").on("click", function(event) {
 <body style="cent">
 {% block content %}
 <div class="container">
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		<div class="alert alert-danger">
+			{% for message in messages %}
+			{{ message }}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endwith %}
+</div>
+<div class="container">
 <form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data">
 		<div class="form-group">
 			{{ form.problem_name.label }}<br>
 			{{ form.problem_name(class="form-control", placeholder="Problem Name") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.short_summary.label }}<br>
+			{{ form.short_summary(class="form-control", placeholder="Short Summary") }} <br>
 		</div>
 		<div class="form-group">
 			{{ form.summary.label }}<br>

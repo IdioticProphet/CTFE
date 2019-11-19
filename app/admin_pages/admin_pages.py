@@ -37,11 +37,16 @@ def create_problem():
                         if allowed_file(f.filename):
                                 f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
                         #Updating the Problem Database
-                        sql_command = "INSERT INTO ctf_problems(problem_name, summary, unique_id, category) VALUES (:problem_name, :summary, :unique_id, :category)"
-                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data)
+                        sql_command = "INSERT INTO ctf_problems(problem_name, short_summary, summary, unique_id, category) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category)"
+                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data)
                         #Updating the Flag Database
-                        sql_command = "INSERT INTO ctf_problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"
-                        sql_connection.connection.query(sql_command, unique_id=form.unique_id.data, flag=form.solution_flag.data, points=form.point_value.data)
+                        try:
+                                sql_command = "INSERT INTO ctf_problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"
+                                sql_connection.connection.query(sql_command, unique_id=form.unique_id.data, flag=form.solution_flag.data, points=form.point_value.data)
+                        except:
+                                flash("Error! Duplicate Flag")
+                                sql_connection.connection.query(f"DELETE FROM ctf_problems WHERE id={form.unique_id.data}")
+                                return render_template("create_problem.html", form=form)
                         #Updating the teams database
                         sql_command = f"ALTER TABLE team_solves ADD problem_{form.unique_id.data} BOOLEAN DEFAULT FALSE"
                         sql_connection.connection.query(sql_command)
