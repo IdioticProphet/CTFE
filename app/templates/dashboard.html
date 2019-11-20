@@ -118,31 +118,50 @@ function fill_un_id(number) {
 	place.value = number;
 }
 
-function filterSelection(c) {
+
+
+function add_elements(category){
 	var element_array, i;
-	element_array = document.getElementsByClassName("filterItem")
-	if (c == "all") c="";
-	for (i=0; i < element_array.length; i++) {
-		removeClass(element_array[i], "show");
-		if (element_array[i].className.indexOf(c) > -1) addClass(element_array[i], "show");
+	element_array = document.getElementsByClassName("filterItem");
+	if (category == "all") {
+		for (let ele of element_array) {
+			ele.classList.add("show");
+		}
+		return
+	}
+	for (let ele of element_array) {
+		if (ele.className.indexOf(category) > 1) ele.classList.add("show");
 	}
 }
 
-function addClass(element, name_to_add){
-	element.classList.add(name_to_add);
+function remove_elements(category){
+	var element_array, i;
+	element_array = document.getElementsByClassName("filterItem");
+	for(let ele of element_array) {
+		if (ele.className.indexOf(category) > -1) ele.classList.remove("show");
+	}
 }
 
-function removeClass(element, name_to_remove){
-	element.classList.remove(name_to_remove);
+function check_box_function(checkboxElement, category) {
+	var elem = document.getElementById(`ck${category}`);
+	console.log(elem);
+	if (elem.checked) {
+		add_elements(category);
+	} else {
+		remove_elements(category);
+	}
 }
+
 $(document).ready(function () {
-filterSelection("all");
+add_elements("all");
 });
+
 </script>
 <style>
 .challenge-entry {
   margin-left: 10px;
   margin-right: 10px;
+  margin-top: 10px;
   width: 150px;
   height: 150px;
   float: left;
@@ -164,12 +183,20 @@ filterSelection("all");
 <div id="app" class="flex-container">
 	<div class="left sidebar">
 		<div id="myBtnContainer">
-	<button class="btn active" onclick="filterSelection('all')"> Show all</button>
-	<button class="btn" onclick="filterSelection('Advanced')"> Default</button>
-	<button class="btn" onclick="filterSelection('Basic')"> Basic</button>
+			<button class="btn active" onclick="filterSelection('all')"> Show all</button><br>
+				{% with records = category_names %}
+					{% if records %}
+						{% for record in records %}
+						    <input id="ck{{record.category}}" type="checkbox"  onchange="check_box_function(this, '{{record.category}}')" checked>
+							<label for="ck{{record.category}}"> {{record.category}}</label><br>
+							<!--<button class="btn" onclick="filterSelection('{{record.category}}')"> {{ record.category }}</button><br>-->
+						{% endfor %}
+					{% endif %}
+				{% endwith %}
+		</div>
+		
 	</div>
-	</div>
-	<div class="middle">
+<div class="middle">
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	{% for record in messages %}

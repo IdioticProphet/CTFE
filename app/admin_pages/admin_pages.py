@@ -10,6 +10,16 @@ def allowed_file(filename):
         ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def provision_number():
+    sql_connection = SQL_Connect()
+    sql_command = ("SELECT MAX(ID) AS ID FROM ctf_problems LIMIT 1")
+    try:
+        output_data = sql_connection.connection.query(sql_command)
+    except:
+        flash("SQL ERROR 1")
+        return redirect("/404") 
+    return(output_data.first().ID)
+
 @admin.before_request
 def admin1():
     if "admin" not in session.keys():
@@ -36,6 +46,7 @@ def create_problem():
                         f = request.files["file_field"]
                         if allowed_file(f.filename):
                                 f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
+                        form.unique_id.data = provision_number()+1
                         #Updating the Problem Database
                         sql_command = "INSERT INTO ctf_problems(problem_name, short_summary, summary, unique_id, category) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category)"
                         sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data)
@@ -51,7 +62,7 @@ def create_problem():
                         sql_command = f"ALTER TABLE team_solves ADD problem_{form.unique_id.data} BOOLEAN DEFAULT FALSE"
                         sql_connection.connection.query(sql_command)
                         flash("Problem Created successfully.")
-                        return redirect("/create_problem")
+                        return redirect("/admin/create_problem")
                 else:
                         flash("SQL Error 1")
                         redirect("/404")

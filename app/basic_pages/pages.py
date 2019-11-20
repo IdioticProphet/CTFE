@@ -109,7 +109,8 @@ def dashboard():
                 output_data = sql_connection.connection.query(sql_command)
                 if output_data is not None:
                     flash(output_data.all())
-                    return render_template("dashboard.html", form=form)
+                    category_names = sql_connection.connection.query("SELECT DISTINCT category FROM ctf_problems").all()
+                    return render_template("dashboard.html", form=form, category_names=category_names)
                 else:
                     flash("Awkward... where are the ctf problems...")
                     return redirect("/404")
