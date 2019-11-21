@@ -2,10 +2,10 @@
 {% block head %}
 {{super()}}
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<link rel="stylesheet" href="{{ url_for("static", filename="css/dashboard.css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 <script>
-
 Vue.component('problem-button', {
 	delimiters: ["!!!", "!!!"],
 	data: function () {
@@ -116,40 +116,6 @@ $(document).ready(function(){
 function fill_un_id(number) {
 	var place = document.getElementById('unique_id');
 	place.value = number;
-}
-
-
-
-function add_elements(category){
-	var element_array, i;
-	element_array = document.getElementsByClassName("filterItem");
-	if (category == "all") {
-		for (let ele of element_array) {
-			ele.classList.add("show");
-		}
-		return
-	}
-	for (let ele of element_array) {
-		if (ele.className.indexOf(category) > 1) ele.classList.add("show");
-	}
-}
-
-function remove_elements(category){
-	var element_array, i;
-	element_array = document.getElementsByClassName("filterItem");
-	for(let ele of element_array) {
-		if (ele.className.indexOf(category) > -1) ele.classList.remove("show");
-	}
-}
-
-function check_box_function(checkboxElement, category) {
-	var elem = document.getElementById(`ck${category}`);
-	console.log(elem);
-	if (elem.checked) {
-		add_elements(category);
-	} else {
-		remove_elements(category);
-	}
 }
 
 $(document).ready(function () {
