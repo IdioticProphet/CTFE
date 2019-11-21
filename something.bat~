@@ -1,2 +1,0 @@
-start python D:\ctfengine\run.py && pause
-start D:\mysql\bin\start_sql.bat
