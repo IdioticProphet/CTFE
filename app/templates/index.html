@@ -5,11 +5,16 @@
 {%block content%}
 {% with messages = get_flashed_messages() %}
 {% if messages %}
-<ul>
 	{% for message in messages %}
-	<li>{{ message }} </li>
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
 	{% endfor %}
-</ul>
 {% endif %}
 {% endwith %}
+
+{% filter markdown %}
+# asdfasdf
+------
+![Image]({{url_for("static", filename="pictures/picture.jpg")}})
+{%endfilter%}
+
 {%endblock%}

@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, session, render_template, flash, redirect
+from flask import Flask, Blueprint, session, render_template, flash, redirect, current_app
 from ..forms import TeamForm, ChangeTeamForm
 from ..db import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,6 +36,7 @@ def join_team():
                 sql_connection.connection.query(sql_command, new_list=member_list)
                 sql_command = "UPDATE users SET team_id=:new_id"
                 sql_connection.connection.query(sql_command, new_id=form.team_id.data)
+                current_app.logger.info(f"{session['username']} joined team with ID {form.team_id.data}")
                 flash("Joined Team Successfully")
                 return redirect("/profile/join_team")
             else:
@@ -54,6 +55,17 @@ def create_team():
         if form.validate_on_submit():
             sql_connection = SQL_Connect()
             if sql_connection.is_up():
+                #Removing user from a team
+                sql_command = f"SELECT members FROM teams WHERE id={session['team_id']}"
+                data = sql_connection.connection.query(sql_command)
+                if data.first():
+                    current_members = data.first().members.split()
+                    if session['username'] in current_members:
+                        current_members.remove(session['username'])
+                    member_list = " ".join(current_members)
+                    sql_command = f"UPDATE teams SET members=:members WHERE id=:id"
+                    sql_connection.connection.query(sql_command, members=member_list, id=session['team_id'])
+
                 # Creating the New team
                 sql_command = "INSERT INTO teams(team_name, members, team_password) VALUES (:team_name, :members, :team_password)"
                 team_name = form.new_team_name.data
@@ -69,6 +81,13 @@ def create_team():
                 # Ensuring the User is associated with their team
                 sql_command = f"UPDATE users SET team_id = {team_id}"
                 sql_connection.connection.query(sql_command)
+
+                # Adding new team to scoring table
+                sql_command = f"INSERT INTO team_solves(team_id) VALUES ({team_id})"
+                sql_connection.connection.query(sql_command)
+
+                
+                current_app.logger.info(f"{session['username']} created team with ID {team_id}, name {form.new_team_name.data}")
                 flash("Team created Successfully, and joined")
                 return redirect("/index")
             else:

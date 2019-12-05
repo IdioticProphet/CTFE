@@ -1,9 +1,11 @@
+<html>
 {% extends "topindex.html"%}
 {% block head %}
 {{super()}}
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
 Vue.component('problem-button', {
@@ -20,16 +22,14 @@ Vue.component('problem-button', {
 		}
 
 	},
-	props: ['unique_id', 'problem_name', 'problem_summary'],
+	props: ["problem_solved",'unique_id', 'problem_name', 'problem_summary'],
 	template: `
-	<button v-on:click="do_thing(Button)" class="item-c-button btn btn-primary" id="Button">
+	<button v-on:click="do_thing(Button)" :class="problem_solved" class="item-c-button btn" id="Button">
 		<div>!!! problem_name !!!</div><br> 
 		<div>!!! problem_summary !!!</div><br>
 	</button>
 	`
 });
-
-
 
 Vue.component('modal-maker',{
 		delimiters: ['!!!','!!!'],
@@ -46,33 +46,30 @@ Vue.component('modal-maker',{
 		template: `
 					
 <div id="problem-modal" class="modal"  tabindex="-1" role="dialog">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">!!! name !!!</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         </button>
       </div>
-      <div class="modal-body">
-        !!! summary !!!
-      </div>
-	  <form action="" method="POST" name="flag" :id ="unique_id">
+      <div id="problem-summary" class="modal-body"><span v-html="summary"></span></div>
+	  <form action="" method="POST" name="flag" id ="flag_form" onkeypress="return event.keyCode != 13">
       <div class="modal-footer flag-footer flag-form">
 		<div class="flag-left">
-		{{ form.flag(class="form-control girth", placeholder="flag") }} 
-		{{ form.unique_id(type="hidden") }}
+		<input id="flag" name="flag" placeholder="flag" required="required" type="text" value="" class="form-control girth">
+		<input id="unique_id" name="unique_id" required="required" type="hidden" :value="unique_id">
 		</div><div class="flag-right">
-		{{ form.submit(class="btn btn-primary", type="submit", value="Submit") }}
-		<button type="button" onclick="toggle_modal()" class="btn btn-secondary flag-right">Close</button>
+		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag()" name="submit">Submit</button>
+		<button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
 		</div>
-		{{ form.hidden_tag() }}
+		<input name="team_id" required="required" type="hidden" value={{session["team_id"]}}>
 		</div>
 	</form>
     </div>
   </div>
 </div>
-	
-		`,
+	`,
 		
 		created: function() {
 			this.fetchData(this.unique_id);
@@ -92,7 +89,7 @@ Vue.component('modal-maker',{
 						for (var i = 0; i<length; i++) {
 							if (data[i].unique_id == button_id) {
 								this.name = data[i].problem_name;
-								this.summary = data[i].summary;
+								this.summary = marked(data[i].summary);
 								
 							}
 						}
@@ -107,6 +104,7 @@ function insert_modal(unique_id) {
 	fill_un_id(unique_id);
 	toggle_modal();
 }
+
 function toggle_modal() {
 $(document).ready(function(){
    $(`#problem-modal`).modal("toggle");
@@ -122,8 +120,41 @@ $(document).ready(function () {
 add_elements("all");
 });
 
+function check_flag() {
+// check the flag for correctness, call the API, which updates the score, and then updates the problem that is solved to be green
+// PLANNED: refresh the scoreboard when done
+	var serialized = $('#flag_form').serialize();
+	var unique_id = $("#unique_id").val();
+	fetch(`/api/flag_submit?${serialized}`)
+		.then(response => response.json())
+		.then(json => {
+			var data = json;
+			update_solves(data["response"], unique_id);
+		})
+		
+	}
+
+function update_solves(data, unique_id) {
+	if(data == "202") {
+			element = document.getElementById(`item-c${unique_id}`).childNodes[0];
+			element.classList.remove('btn-primary');
+			element.classList.add('btn-success');
+	} else {
+		console.log(data);
+	}
+}
+
+
 </script>
 <style>
+.mid{
+	width: 90%;
+	margin: 0 auto;
+	display: grid;
+	justify-content: center;
+	grid-template-columns: repeat(auto-fill, minmax(150px,150px));
+	grid-gap: 10px;
+}
 .challenge-entry {
   margin-left: 10px;
   margin-right: 10px;
@@ -134,6 +165,10 @@ add_elements("all");
   background-color: white;
  <!-- outline: 1px solid black;-->
   position:relative;
+}
+
+btn-primary.solved {
+	btn-success;
 }
 
 .modal-backdrop.fade, .modal-backdrop.fade.in {
@@ -148,14 +183,12 @@ add_elements("all");
 	</div>
 <div id="app" class="flex-container">
 	<div class="left sidebar">
-		<div id="myBtnContainer">
-			<button class="btn active" onclick="filterSelection('all')"> Show all</button><br>
+		<div id="myBtnContainer" style="text-align:left;">
 				{% with records = category_names %}
 					{% if records %}
 						{% for record in records %}
 						    <input id="ck{{record.category}}" type="checkbox"  onchange="check_box_function(this, '{{record.category}}')" checked>
 							<label for="ck{{record.category}}"> {{record.category}}</label><br>
-							<!--<button class="btn" onclick="filterSelection('{{record.category}}')"> {{ record.category }}</button><br>-->
 						{% endfor %}
 					{% endif %}
 				{% endwith %}
@@ -163,17 +196,15 @@ add_elements("all");
 		
 	</div>
 <div class="middle">
+	<div class="mid">
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
 	{% for record in messages %}
 			{% for problem in record %}
 				<div class="challenge-entry filterItem {{problem.category}}">
-						<!--<div class="item-a">{{ problem.problem_name }}</div>
-						<div class="item-b">{{ problem.short_summary }}</div>-->
 					<div class="item-c" id="item-c{{problem.unique_id}}">
-					<problem-button unique_id='{{ problem.unique_id }}' problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
+					<problem-button problem_solved={{"btn-success" if check_func(problem.unique_id, solved_questions) == 1 else "btn-primary"}} unique_id="{{ problem.unique_id }}" problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
 					</div>
-					
 					<script>
 					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
 					</script>
@@ -184,12 +215,18 @@ add_elements("all");
 	{% endif %}
 	{% endwith %}
 	</div>
+</div>
 	<div class="right">
 		<h4>Scoreboard:</h4>
+
+		
 	</div>
 </div>
-{%endblock%}
 
+{% block footer %}
+{% endblock %}
+{%endblock%}
 </body>
+</html>
 
 

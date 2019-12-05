@@ -60,7 +60,7 @@
 
 			.flex-container > .middle {
 				display: flex;
-				width: 70%;
+				width: 100%;
 				font-size: 1.0em;
 				padding-top: 10px;
 				padding-bottom: 10px;
@@ -130,6 +130,7 @@
 			}
 			.item-c {
 				max-width: 150px;
+				max-height: 150px;
 				height: 100%;
 				width: 100%;
 				font-size: 1.0em;
@@ -155,6 +156,10 @@
     content: " ";
     height: 100%;
   }
+  .modal-xl {
+	  width: 90%;
+	  max-height: 600px;
+	  max-width:700px;
 }
 
 .modal-dialog {
@@ -162,5 +167,12 @@
   display: inline-block;
   text-align: left;
   vertical-align: middle;
+  height: 450px;
+}
+.modal-content {
+	height: 100%;
+}
+.modal-body {
+	vertical-align:middle;
 }
 modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}.modal-backdrop.fade{opacity:0}.modal-backdrop,.modal-backdrop.fade.in{opacity:.8;filter:alpha(opacity=80)}

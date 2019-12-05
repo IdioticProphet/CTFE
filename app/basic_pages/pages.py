@@ -6,6 +6,16 @@ from ..db import *
 
 pages = Blueprint("pages", __name__, url_prefix="/")
 
+def check_func(unique_id, solved_list):
+        string= f"problem_{unique_id}"
+        if len(solved_list) == 0:
+                return False
+        if string in solved_list[0].keys():
+                if solved_list[0][string] == 1:
+                        return True
+        return False
+
+
 @pages.route("/")
 @pages.route("/index")
 def index():
@@ -63,7 +73,7 @@ def register():
                         flash("Username is already taken!")
                         sql_connection.disconnect()
                         return redirect("/register")
-                sql_command = ("SELECT email FROM users")
+                sql_command = "SELECT email FROM users"
                 output_data = sql_connection.connection.query(sql_command)
                 all_emails = [x.email.lower() for x in output_data]
                 
@@ -72,10 +82,10 @@ def register():
                         sql_connection.disconnect()
                         return redirect("/register")
                         
-                sql_command = ("SELECT * FROM users WHERE name=:username")
+                sql_command = "SELECT * FROM users WHERE name=:username"
                 output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")   
                 if output_data is not None:
-                        sql_command = ("INSERT INTO users(name, email, password) VALUES(:name, :email, :password)")
+                        sql_command = "INSERT INTO users(name, email, password) VALUES(:name, :email, :password)"
                         password = generate_password_hash(form.password.data)
                         command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data, password=password)
                         flash(f"you have registered {form.username.data} you will get a confirmation email sent to {form.email.data}")
@@ -90,27 +100,26 @@ def register():
 
 @pages.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
-        form = FlagForm()
-
         if "username" not in session.keys():
                 flash("uh-oh you have to login first! Naughty boy.")
                 return redirect("/index")
 	#get ctf problems
-        
-        if form.validate_on_submit():
-                flash(f"{form.flag.data} {session['team_id']} {form.unique_id.data}")
-                return redirect("/404")
+                       
         else:
                 if session["team_id"] == 0:
                         flash("You have to create or join a team before you solve any problems!")
                         return redirect("/index")
                 sql_connection = SQL_Connect()
-                sql_command = ("SELECT * FROM ctf_problems")
+                sql_command = "SELECT * FROM ctf_problems"
                 output_data = sql_connection.connection.query(sql_command)
                 if output_data is not None:
-                    flash(output_data.all())
+                    dashboard_data = output_data.all()
+                    flash(dashboard_data)
                     category_names = sql_connection.connection.query("SELECT DISTINCT category FROM ctf_problems").all()
-                    return render_template("dashboard.html", form=form, category_names=category_names)
+                    sql_command = f"SELECT * FROM team_solves WHERE team_id={session['team_id']}"
+                    solved_questions = sql_connection.connection.query(sql_command).as_dict()
+                    current_app.jinja_env.globals.update(check_func=check_func)
+                    return render_template("dashboard.html", category_names=category_names, solved_questions=solved_questions)
                 else:
                     flash("Awkward... where are the ctf problems...")
                     return redirect("/404")
