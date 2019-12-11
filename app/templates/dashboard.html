@@ -60,8 +60,7 @@ Vue.component('modal-maker',{
 		<input id="flag" name="flag" placeholder="flag" required="required" type="text" value="" class="form-control girth">
 		<input id="unique_id" name="unique_id" required="required" type="hidden" :value="unique_id">
 		</div><div class="flag-right">
-		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag()" name="submit">Submit</button>
-		<button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
+		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag(this)" name="submit">Submit</button>     <button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
 		</div>
 		<input name="team_id" required="required" type="hidden" value={{session["team_id"]}}>
 		</div>
@@ -120,9 +119,10 @@ $(document).ready(function () {
 add_elements("all");
 });
 
-function check_flag() {
+function check_flag(button) {
 // check the flag for correctness, call the API, which updates the score, and then updates the problem that is solved to be green
 // PLANNED: refresh the scoreboard when done
+	button.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submit';
 	var serialized = $('#flag_form').serialize();
 	var unique_id = $("#unique_id").val();
 	fetch(`/api/flag_submit?${serialized}`)
@@ -139,6 +139,7 @@ function update_solves(data, unique_id) {
 			element = document.getElementById(`item-c${unique_id}`).childNodes[0];
 			element.classList.remove('btn-primary');
 			element.classList.add('btn-success');
+			toggle_modal();
 	} else {
 		console.log(data);
 	}

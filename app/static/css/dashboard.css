@@ -80,35 +80,27 @@
 			
 			.flag-form {
 				font-size: 1.0em;
-				display: grid;
-				grid-template:
-					[row1-start] "left right"[row1-end]
-					/ 60% auto;
+				display: flex;
+				flex-direction: row;
 				padding: 20px;
 
 			}
 			.flag-left {
+				width: 60%;
 				font-size: 1.0em;
-				grid-area: left;
-				place-self: center;
-				justify-content: space-evenly;
-				align-content: space-evenly;
+				justify-content: center;				
 			}
 			
 			.flag-right {
+				display: flex;
+				justify-content: space-around;
 				font-size: 1.0em;
-				grid-area: right;
-				place-self: center;
-				justify-content: space-evenly;
-				align-content: space-evenly;
+				width: 40%;
 			}
 			
-			.girth {
-				width: 100%;
-			}
 			.container-asdf {
 				font-size: 1.0em;
-			    word-wrap: break-word;
+			    	word-wrap: break-word;
 				word-break: break-all;
 				padding-top: 20px;
 				padding-bottom: 20px;
@@ -159,7 +151,7 @@
   .modal-xl {
 	  width: 90%;
 	  max-height: 600px;
-	  max-width:700px;
+	  max-width:500px;
 }
 
 .modal-dialog {
