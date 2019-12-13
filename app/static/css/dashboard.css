@@ -46,16 +46,21 @@
 				justify-content: flex-start;
 			}
 			.flex-container > .right {
+				padding-top: 20px;
 				width: 20%;
 				flex-grow: 100%;
 				font-size: 1.0em;
+				word-wrap: break-word;
 			}
 			
 			.flex-container > .left {
-				width: 10%;
+				width: 15%;
 				font-size: 1.0em;
 				background: #F8F8F8;
-				align-items: flex-start !important;
+				text-align: left;
+			}
+			.fltrs {
+				
 			}
 
 			.flex-container > .middle {
@@ -133,8 +138,33 @@
 				width: 100%;
 				box-sizing: border-box;
 			}
-			
-		
+			.scoreboard {
+				margin: 10px;
+				display: grid;
+				grid-template:
+					[row1-start] "left right" auto[row1-end]
+					/ 80% 20% auto;
+			}
+			.scoreboard_name {
+				grid-area: left;
+			}
+			.scoreboard_score {
+				grid-area: right;
+				text-wrap: wrap-around;
+			}
+
+			.score-flex {
+				display: flex;
+				flex-direction: column;
+			}
+			.hidden { 
+				display: none !important;
+
+			}
+			.not-hidden {
+				display: inline-block;
+				opacity: .4;
+			}
 
 			.modal {
   text-align: center;

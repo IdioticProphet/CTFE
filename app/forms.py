@@ -10,6 +10,7 @@ class LoginForm(Form):
 class RegisterForm(Form):
         username = StringField("Username", validators=[DataRequired()])
         password = PasswordField("Password", validators=[DataRequired()])
+        check_password = PasswordField("Confirm Password", validators=[DataRequired()])
         email = StringField("Email", validators=[DataRequired()])
         agreement = BooleanField("I accept the terms and conditions.", validators=[DataRequired()])
         submit = SubmitField("Register")
@@ -26,7 +27,7 @@ class ProblemForm(Form):
         unique_id = IntegerField("Unique ID", validators=[DataRequired()])
         point_value = IntegerField("Point Value", validators=[DataRequired()])
         choices = [""]
-        category = SelectField("Category", choices=[("Basic", "Basic"), ("Advanced", "Advanced")], validators=[DataRequired()])
+        category = SelectField("Category", choices=[("Basic", "Basic"), ("Advanced", "Advanced"), ("Omega", "Omega")], validators=[DataRequired()])
         solution_flag = StringField("Flag", validators=[DataRequired()])
         file_field = FileField("File Upload")
         submit = SubmitField("Submit")

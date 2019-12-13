@@ -68,3 +68,19 @@ def create_problem():
                         redirect("/404")
         else:
                 return render_template("create_problem.html", form=form)
+
+@admin.route("/edit_problem", methods=["GET"])
+def edit_problem():
+        problem_id = request.args.get("problem_id",None)
+        if problem_id is None or not problem_id.isdigit():
+                flash("The problem ID was wrong")
+                return render_template("edit_problem.html")
+        else:
+                sql_connection = SQL_Connect()
+                sql_command = "SELECT * FROM ctf_problems WHERE unique_id=:unid"
+                data=sql_connection.connection.query(sql_command, unid=problem_id)
+                if not data.first():
+                        flash("Something went wrong with the query. The Id is probably wrong")
+                        return render_template("edit_problem.html")
+                return render_template("edit_problem.html", problem_query=data.first())
+                

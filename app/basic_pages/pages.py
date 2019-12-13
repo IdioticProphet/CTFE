@@ -65,6 +65,9 @@ def logout():
 def register():
         form = RegisterForm()
         if form.validate_on_submit():
+                if form.password.data != form.check_password.data:
+                        flash("Passwords did not match!")
+                        return redirect("/register")
                 sql_connection = SQL_Connect()
                 sql_command = ("SELECT name FROM users")
                 output_data = sql_connection.connection.query(sql_command)
@@ -87,7 +90,7 @@ def register():
                 if output_data is not None:
                         sql_command = "INSERT INTO users(name, email, password) VALUES(:name, :email, :password)"
                         password = generate_password_hash(form.password.data)
-                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data, password=password)
+                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data.lower(), password=password)
                         flash(f"you have registered {form.username.data} you will get a confirmation email sent to {form.email.data}")
                         sql_connection.disconnect()
                         return redirect('index')

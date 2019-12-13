@@ -4,7 +4,7 @@
 {%endblock%}
 {%block content%}
 <div class="jumbotron text-center"><div class="container"><h2><b> Register </b></h2></div></div>
-<!-- Some of the styling is definitly stolen from CSAW red's ctf signin Sheet -->
+<!-- Some of the styling inspiration is definitly not stolen from CSAW red's signin Sheet -->
 <div class="container">	
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
@@ -24,6 +24,10 @@
 		<div class="form-group">
 			{{ form.password.label }}<br>
 			{{ form.password(class="form-control", placeholder="Password") }} <br>
+		</div>
+		<div class="form-group">
+			{{ form.check_password.label}}<br>
+			{{ form.check_password(class="form-control", placeholder="Confirm Password") }} <br>
 		</div>
 		<div class="form-group">
 			{{ form.email.label }}<br>

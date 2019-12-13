@@ -60,7 +60,8 @@ Vue.component('modal-maker',{
 		<input id="flag" name="flag" placeholder="flag" required="required" type="text" value="" class="form-control girth">
 		<input id="unique_id" name="unique_id" required="required" type="hidden" :value="unique_id">
 		</div><div class="flag-right">
-		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag(this)" name="submit">Submit</button>     <button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
+		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag(this)" name="submit">Submit</button>
+		<button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
 		</div>
 		<input name="team_id" required="required" type="hidden" value={{session["team_id"]}}>
 		</div>
@@ -117,34 +118,86 @@ function fill_un_id(number) {
 
 $(document).ready(function () {
 add_elements("all");
+populate_score();
 });
 
-function check_flag(button) {
+async function check_flag(button) {
 // check the flag for correctness, call the API, which updates the score, and then updates the problem that is solved to be green
-// PLANNED: refresh the scoreboard when done
 	button.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submit';
 	var serialized = $('#flag_form').serialize();
 	var unique_id = $("#unique_id").val();
+	await sleep(1000);
 	fetch(`/api/flag_submit?${serialized}`)
 		.then(response => response.json())
 		.then(json => {
 			var data = json;
-			update_solves(data["response"], unique_id);
+			update_solves(data["response"], unique_id, button);
 		})
 		
 	}
 
-function update_solves(data, unique_id) {
+async function update_solves(data, unique_id, button) {
 	if(data == "202") {
 			element = document.getElementById(`item-c${unique_id}`).childNodes[0];
+			button.innerHTML = '<i class="fas fa-check"></i> Correct!'
+			button.classList.remove('btn-primary');
+			button.classList.add('btn-success');
 			element.classList.remove('btn-primary');
 			element.classList.add('btn-success');
+			await sleep(3000);
 			toggle_modal();
 	} else {
-		console.log(data);
+		button.classList.add('btn-danger');
+		button.classList.remove('btn-primary');
+		button.innerHTML = '<i class="fas fa-times"></i> Incorrect!';
+		await sleep(3000);
+		button.classList.remove('btn-danger');
+		button.classList.add('btn-primary');
+		button.innerHTML = 'Submit';
 	}
+    populate_score();
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function populate_score() {
+    fetch(`/api/return_team_scores`)
+		.then(response => response.json())
+		.then(json => {
+			var data = json;
+            actually_populate(data.data);
+		})	
+}
+
+function actually_populate(array){
+    document.getElementById("scoreboard").innerHTML = "";
+	var firstElement = document.createElement("div");
+    firstElement.classList.add("score-flex")
+    array.forEach(function (item){
+            var secondElement = document.createElement("div");
+            
+            // This demonstrates that you can just change the classes rather easily
+            secondElement.classList.add("scoreboard");
+            
+            var team_div = document.createElement("div");
+            team_div.classList.add("scoreboard_name");
+            var team_name = document.createTextNode(`${item.team_name}`);
+            team_div.appendChild(team_name);
+            secondElement.appendChild(team_div);
+            
+            var score_div = document.createElement("div");
+            score_div.classList.add("scoreboard_score")
+            var score = document.createTextNode(`${item.score}`);
+            score_div.appendChild(score);
+            secondElement.appendChild(score_div);
+            
+            //add everything together
+            firstElement.appendChild(secondElement);
+       });
+    document.getElementById('scoreboard').appendChild(firstElement);
+}
 
 </script>
 <style>
@@ -184,19 +237,25 @@ btn-primary.solved {
 	</div>
 <div id="app" class="flex-container">
 	<div class="left sidebar">
-		<div id="myBtnContainer" style="text-align:left;">
+            Filters:
+		<div class="fltrs" id="myBtnContainer">
 				{% with records = category_names %}
 					{% if records %}
 						{% for record in records %}
-						    <input id="ck{{record.category}}" type="checkbox"  onchange="check_box_function(this, '{{record.category}}')" checked>
-							<label for="ck{{record.category}}"> {{record.category}}</label><br>
-						{% endfor %}
+                        <div class="custom-control custom-checkbox">
+						    <input class="custom-control-input" id="ck{{record.category}}" type="checkbox"  onchange="check_box_function(this, '{{record.category}}')" checked>
+							<label class="custom-control-label" for="ck{{record.category}}"> {{record.category}}</label><br>
+                        </div>
+                        {% endfor %}
 					{% endif %}
 				{% endwith %}
 		</div>
 		
 	</div>
 <div class="middle">
+    <div id="nothing_to_see_here" class="hidden">
+        <i class="far fa-frown"></i> Nothing to see here
+    </div>
 	<div class="mid">
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
@@ -218,9 +277,9 @@ btn-primary.solved {
 	</div>
 </div>
 	<div class="right">
-		<h4>Scoreboard:</h4>
-
-		
+		<h4>Scoreboard</h4>
+		<div id="scoreboard">
+        </div>
 	</div>
 </div>
 
