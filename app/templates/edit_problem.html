@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+{% extends "topindex.html"%}
+<head>
+{% block head %}
+{{super()}}
+{% endblock %}
+
+<script>
+function query_change(form){
+	
+}
+</script>
+</head>
+<body>
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="jumbotron"><div class="container text-center"><h2><b> Edit a Problem </b></h2></div></div>
+</div>
+<div class="container">
+If you are on this page, I hope that you know what you are doing, if you do not know what you are doing, please dont be on this page<br>
+<form id="edit-form" onkeypress="return event.keyCode != 13">
+    <label for="problem_name">Problem Name</label>
+	<input id="problem_name" name="problem_name" placeholder="Problem Name" required="required" type="text" value="{{ problem_query.problem_name }}" class="form-control"><br>
+	<label for="short_summary">Short Summary</label>
+    <input id="short_summary" name="short_summary" placeholder="Short Summary" required="required" type="text" value="" class="form-control"><br>
+	<label for="summary">Summary</label>
+    <textarea id="summary" name="summary" placeholder="Summary" required="required" type="text" value="" class="form-control"></textarea><br>
+	<label for="unique_id">Unique Id</label>
+    <input id="unique_id" name="unique_id" placeholder="0" required="required" type="number" value="" class="form-control"><br>
+	<button id="submit-button" type="button" class="btn btn-primary" onclick="query_change(this)" name="submit">Submit</button><br>
+</form>
+</div>
+{% endblock %}
+</body>
+</html>

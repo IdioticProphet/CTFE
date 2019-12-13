@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% extends "topindex.html"%}
+{% block head %}
+{{super()}}
+{% endblock %}
+
+</head>
+<body>
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- Content goes here -->
+{% endblock %}
+</body>
+</html>
