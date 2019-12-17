@@ -65,6 +65,9 @@ def logout():
 def register():
         form = RegisterForm()
         if form.validate_on_submit():
+                if " " in form.username.data.split():
+                        flash("Your username should not contain spaces!")
+                        return redirect("/register")
                 if form.password.data != form.check_password.data:
                         flash("Passwords did not match!")
                         return redirect("/register")
@@ -88,10 +91,10 @@ def register():
                 sql_command = "SELECT * FROM users WHERE name=:username"
                 output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")   
                 if output_data is not None:
-                        sql_command = "INSERT INTO users(name, email, password) VALUES(:name, :email, :password)"
+                        sql_command = "INSERT INTO users(name, display_name, email, password) VALUES(:name, :display_name,:email, :password)"
                         password = generate_password_hash(form.password.data)
-                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, email=form.email.data.lower(), password=password)
-                        flash(f"you have registered {form.username.data} you will get a confirmation email sent to {form.email.data}")
+                        command_output = sql_connection.connection.query(sql_command, name=form.username.data, display_name=form.real_name.data, email=form.email.data.lower(), password=password)
+                        flash(f"you have registered {form.username.data}, display name of {form.real_name.data} you will get a confirmation email sent to {form.email.data}. You can now log in")
                         sql_connection.disconnect()
                         return redirect('index')
                 else:
@@ -104,13 +107,11 @@ def register():
 @pages.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
         if "username" not in session.keys():
-                flash("uh-oh you have to login first! Naughty boy.")
-                return redirect("/index")
-	#get ctf problems
-                       
+                flash("You have to login before accessing the dashboard!")
+                return redirect("/index")             
         else:
                 if session["team_id"] == 0:
-                        flash("You have to create or join a team before you solve any problems!")
+                        flash("You have to create or join a team before you can access the dashboard! Do so from your profile.")
                         return redirect("/index")
                 sql_connection = SQL_Connect()
                 sql_command = "SELECT * FROM ctf_problems"
@@ -129,7 +130,9 @@ def dashboard():
                 flash("????????????? idk what went wrong")
                 return redirect("/404")
 
-
-
-
-
+@pages.route("/scoreboard")
+def scoreboard():
+        if "username" not in session.keys():
+                flash("You need to login to view scoreboard, because I said so!")
+                return redirect("index")
+        return render_template("scoreboard.html")

@@ -12,6 +12,7 @@ class RegisterForm(Form):
         password = PasswordField("Password", validators=[DataRequired()])
         check_password = PasswordField("Confirm Password", validators=[DataRequired()])
         email = StringField("Email", validators=[DataRequired()])
+        real_name = StringField("Name", validators=[DataRequired()])
         agreement = BooleanField("I accept the terms and conditions.", validators=[DataRequired()])
         submit = SubmitField("Register")
     
@@ -34,11 +35,12 @@ class ProblemForm(Form):
 
 class TeamForm(Form):
         new_team_name = StringField("Team Name", validators=[DataRequired()])
-        new_team_password = StringField("Password", validators=[DataRequired()])
+        new_team_password = PasswordField("Password", validators=[DataRequired()])
+        confirm_team_password = PasswordField("Confirm Password", validators=[DataRequired()])
         submit = SubmitField("Submit")
 
 class ChangeTeamForm(Form):
         team_id = IntegerField("Team ID")
-        team_password = StringField("Password to Join")
+        team_password = PasswordField("Password to Join")
         submit = SubmitField("Submit")
         

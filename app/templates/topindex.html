@@ -72,11 +72,14 @@ body {
                <li class="nav-item">
                   <a class="nav-link" href="/">Home </a>
                </li>
-               <li class="nav-item">
                   {% if session["username"] %}
+                  <li class="nav-item">
                   <a class="nav-link" href="/dashboard">Dashboard</a>
+                  </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="/scoreboard">Scoreboard</a>
+                  </li>
                   {% endif %}
-               </li>
                <li class="nav-item">
                </li>
             </ul>

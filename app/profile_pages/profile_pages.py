@@ -53,6 +53,9 @@ def join_team():
 def create_team():
         form = TeamForm()
         if form.validate_on_submit():
+            if form.new_team_password != form.confirm_team_password:
+                flash("The Passwords did not match!")
+                return redirect("/profile/create_team")
             sql_connection = SQL_Connect()
             if sql_connection.is_up():
                 #Removing user from a team
@@ -79,14 +82,15 @@ def create_team():
                 team_id = data.first().id
 
                 # Ensuring the User is associated with their team
-                sql_command = f"UPDATE users SET team_id = {team_id}"
-                sql_connection.connection.query(sql_command)
+                sql_command = f"UPDATE users SET team_id = {team_id} WHERE name=:username"
+                sql_connection.connection.query(sql_command, username=session["username"])
 
                 # Adding new team to scoring table
                 sql_command = f"INSERT INTO team_solves(team_id) VALUES ({team_id})"
                 sql_connection.connection.query(sql_command)
 
                 
+                session['team_id'] = team_id
                 current_app.logger.info(f"{session['username']} created team with ID {team_id}, name {form.new_team_name.data}")
                 flash("Team created Successfully, and joined")
                 return redirect("/index")

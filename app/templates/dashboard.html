@@ -175,7 +175,7 @@ function actually_populate(array){
     document.getElementById("scoreboard").innerHTML = "";
 	var firstElement = document.createElement("div");
     firstElement.classList.add("score-flex")
-    array.forEach(function (item){
+    array.slice(0,5).forEach(function (item){
             var secondElement = document.createElement("div");
             
             // This demonstrates that you can just change the classes rather easily
@@ -277,7 +277,7 @@ btn-primary.solved {
 	</div>
 </div>
 	<div class="right">
-		<h4>Scoreboard</h4>
+		<h4>Top 5 Teams</h4>
 		<div id="scoreboard">
         </div>
 	</div>

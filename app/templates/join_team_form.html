@@ -19,8 +19,8 @@
 	{% endif %}
 {% endwith %}
 </div>
-
-<form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data" style="padding: 75px;">
+<div class="container">
+<form id="CoolForm" action="" method="POST" name="flag" enctype="multipart/form-data">
 		<div class="form-group">
 			{{ form.team_id.label }}<br>
 			{{ form.team_id(class="form-control", placeholder="Team ID") }} <br>
@@ -33,5 +33,6 @@
 		{{ form.hidden_tag() }}
 		</div>
 	</form>
+    </div>
 </body>
 {% endblock %}

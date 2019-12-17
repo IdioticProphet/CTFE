@@ -8,11 +8,9 @@ api = Blueprint("api", "api", url_prefix="/api")
 def app_api():
     sql_connection = SQL_Connect()
     sql_command = "SELECT * FROM ctf_problems"
-    try:
-        output_data = sql_connection.connection.query(sql_command)
-    except:
-        flash("SQL ERROR 1")
-        return redirect("/404") 
+    if not sql_connection.is_up():
+        return jsonify({"response": 405, "description": "SQL_NOT_UP"})
+    output_data = sql_connection.connection.query(sql_command)
     return(jsonify(data=output_data.as_dict()))
 
 @api.route("/provision_number")
@@ -59,7 +57,7 @@ def flag_submit():
         score_gained = score_to_add
         team_name = sql_connection.connection.query(team_name_command).first().team_name
         solved_problem_name = sql_connection.connection.query(solved_problem_name_cmd).first().problem_name
-        sql_command = "INSERT INTO scoring_feed(team_name, problem_solved, point_value) VALUES ({team_name}, {solved_problem_name}, {score_gained}, {})"
+        sql_command = "INSERT INTO scoring_feed(team_name, problem_solved, point_value, new_total) VALUES ({team_name}, {solved_problem_name}, {score_gained}, {new_score})"
         current_app.logger.info(f"{team_name} solved problem {solved_problem_name}")
         return(jsonify({'response': "202", "description": "problem successfully solved"}))
     else:
@@ -75,3 +73,14 @@ def return_team_scores():
     dictionary = sorted(data.as_dict(), key=itemgetter('score'), reverse=True)
     return(jsonify(data=dictionary))
     
+@api.route("/scoring_feed", methods=["GET"])
+def return_score_feed():
+    sql_connection = SQL_Connect()
+    if not sql_connection.is_up():
+        return jsonify({"response":405, "description": "SQL_NOT_UP"})
+    sql_command="SELECT * FROM scoring_feed"
+    data = sql_connection.connection.query(sql_command).as_dict()
+    for item in data:
+        item["when_solved"] = item["when_solved"].isoformat()
+    dictionary = sorted(data, key=itemgetter('team_name'), reverse=True)
+    return(jsonify(dictionary))
