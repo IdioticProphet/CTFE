@@ -25,7 +25,8 @@ def create_tables():
                 CREATE TABLE IF NOT EXISTS scoring_feed(
                         team_name varchar(255),
                         problem_solved varchar(255),
-                        point_value int(11),
+                        point_value INT,
+                        new_total INT,
                         when_solved datetime DEFAULT CURRENT_TIMESTAMP
                 )
                 """

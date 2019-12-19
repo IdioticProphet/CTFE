@@ -12,13 +12,16 @@ def allowed_file(filename):
 
 def provision_number():
     sql_connection = SQL_Connect()
-    sql_command = ("SELECT MAX(ID) AS ID FROM problems LIMIT 1")
-    try:
+    sql_command = ("SELECT MAX(unique_id) AS unique_id FROM problems LIMIT 1")
+    if sql_connection.is_up():
         output_data = sql_connection.connection.query(sql_command)
-    except:
+    else:
         flash("SQL ERROR 1")
-        return redirect("/404") 
-    return(output_data.first().ID)
+        return redirect("/404")
+    if output_data.first().unique_id:
+        return(output_data.first().unique_id)
+    else:
+        return(0)
 
 @admin.before_request
 def admin1():

@@ -17,14 +17,14 @@ Vue.component('problem-button', {
 		}
 	},
 	methods: {
-		do_thing: function(variable) {
-			insert_modal(variable)	
+		do_thing: function(Button, problem_solved) {
+			insert_modal(Button, problem_solved)	
 		}
 
 	},
 	props: ["problem_solved",'unique_id', 'problem_name', 'problem_summary'],
 	template: `
-	<button v-on:click="do_thing(Button)" :class="problem_solved" class="item-c-button btn" id="Button">
+	<button v-on:click="do_thing(Button, problem_solved)" :class="problem_solved" class="item-c-button btn" id="Button">
 		<div>!!! problem_name !!!</div><br> 
 		<div>!!! problem_summary !!!</div><br>
 	</button>
@@ -41,7 +41,7 @@ Vue.component('modal-maker',{
 			}
 		},
 		
-		props: ['unique_id'],
+		props: ['unique_id', 'class1', 'sub_text', 'class2'],
 
 		template: `
 					
@@ -60,10 +60,9 @@ Vue.component('modal-maker',{
 		<input id="flag" name="flag" placeholder="flag" required="required" type="text" value="" class="form-control girth">
 		<input id="unique_id" name="unique_id" required="required" type="hidden" :value="unique_id">
 		</div><div class="flag-right">
-		<button id="submit-button" type="button" class="btn btn-primary" onclick="check_flag(this)" name="submit">Submit</button>
+		<button id="submit-button" type="button" :class="[class1, class2]" class="btn" onclick="check_flag(this)" name="submit">!!! sub_text !!!</button>
 		<button type="button" onclick="toggle_modal()" class="btn btn-secondary">Close</button>
 		</div>
-		<input name="team_id" required="required" type="hidden" value={{session["team_id"]}}>
 		</div>
 	</form>
     </div>
@@ -98,8 +97,16 @@ Vue.component('modal-maker',{
 			},	
 		});
 
-function insert_modal(unique_id) {
-	document.getElementById('modal-div').innerHTML = `<modal-maker id='problem-modal' unique_id=${unique_id}></modal-maker>`;
+function insert_modal(unique_id, className) {
+// btn-primary or btn-success
+    if (className == "btn-success") {
+        var sub_text = "Solved";
+        var className2 = "no-click";
+    } else {
+        var sub_text = "Submit";
+        var className2 = "click";
+    }
+	document.getElementById('modal-div').innerHTML = `<modal-maker id='problem-modal' unique_id=${unique_id} class1=${className} class2=${className2} sub_text=${sub_text}></modal-maker>`;
 	new Vue({ el: `#problem-modal ` })
 	fill_un_id(unique_id);
 	toggle_modal();
@@ -201,6 +208,7 @@ function actually_populate(array){
 
 </script>
 <style>
+.no-click {pointer-events: none;}
 .mid{
 	width: 90%;
 	margin: 0 auto;

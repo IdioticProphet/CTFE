@@ -7,12 +7,10 @@ from ..db import *
 pages = Blueprint("pages", __name__, url_prefix="/")
 
 def check_func(unique_id, solved_list):
-        string= f"problem_{unique_id}"
         if len(solved_list) == 0:
                 return False
-        if string in solved_list[0].keys():
-                if solved_list[0][string] == 1:
-                        return True
+        for record in solved_list:
+                if record.unique_id == unique_id: return True
         return False
 
 
@@ -131,8 +129,8 @@ def dashboard():
                     dashboard_data = output_data.all()
                     flash(dashboard_data)
                     category_names = sql_connection.connection.query("SELECT DISTINCT category FROM problems").all()
-                    sql_command = f"SELECT * FROM team_solves WHERE team_id=:team_id"
-                    solved_questions = sql_connection.connection.query(sql_command, team_id=session['team_id']).as_dict()
+                    sql_command = f"SELECT unique_id FROM team_solves WHERE team_id=:team_id"
+                    solved_questions = sql_connection.connection.query(sql_command, team_id=session['team_id']).all()
                     current_app.jinja_env.globals.update(check_func=check_func)
                     return render_template("dashboard.html", category_names=category_names, solved_questions=solved_questions)
                 else:

@@ -11,8 +11,8 @@ $(document).ready(function(){
 });
 
 function ajax_call() {
-		$.ajax({url: "../api/provision_number", success: function(result){
-			number = result.data[0].ID+1;
+		$.ajax({url: "/api/provision_number", success: function(result){
+			number = result[0].unique_id+1;
 			var unid = document.getElementById('unique_id');
 			unid.value = number;
 		}});
@@ -31,19 +31,15 @@ $("#coolButton").on("click", function(event) {
 </script>
 
 </head>
-{% endblock %}
+
 <style>
-.body {
-  padding-top 70px !important;
-}
-.style1 {
-	padding-top: 10vh;
-	padding-left: 10vw;
-	padding-right: 10vw;
+body {
+  padding-top 80px !important;
 }
 </style>
-<body style="cent">
+{% endblock %}
 {% block content %}
+<body style="padding-top:80px;">
 <div class="container">
 {% with messages = get_flashed_messages() %}
 	{% if messages %}

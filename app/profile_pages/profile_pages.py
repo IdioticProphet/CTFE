@@ -19,6 +19,9 @@ def profile():
 def join_team():
     form = ChangeTeamForm()
     if form.validate_on_submit():
+        if not form.team_id.data.isnumeric():
+            flash("Team ID is not a number!")
+            return redirect("/profile/join_team")
         sql_connection = SQL_Connect()
         if sql_connection.is_up():
             sql_command = "SELECT team_password FROM teams WHERE team_id=:id"
@@ -28,19 +31,20 @@ def join_team():
                 return redirect("/profile/join_team")
             if check_password_hash(data.first().team_password, form.team_password.data):
                 sql_command = "SELECT members FROM teams where team_id=:id"
-                data = sql_connection.connection.query(sql_command, ide=form.team_id.data)
+                data = sql_connection.connection.query(sql_command, id=form.team_id.data)
                 member_list = data.first().members
                 #making the new list of users
                 if session["username"] not in member_list.split():
                     member_list += f" {session['username']}"
                 #Updating teams to use the new list
-                sql_command = "UPDATE teams SET members=:new_list"
-                sql_connection.connection.query(sql_command, new_list=member_list)
+                sql_command = "UPDATE teams SET members=:new_list WHERE team_id=:id"
+                sql_connection.connection.query(sql_command, new_list=member_list, id=form.team_id.data)
 
                 # Make user use new team ID
                 sql_command = "UPDATE users SET team_id=:new_id WHERE id=:user_id"
                 sql_connection.connection.query(sql_command, new_id=form.team_id.data, user_id=session["user_id"])
                 current_app.logger.info(f"{session['username']} joined team with ID {form.team_id.data}")
+                session["team_id"] = form.team_id.data
                 flash("Joined Team Successfully")
                 return redirect("/profile/join_team")
             else:
