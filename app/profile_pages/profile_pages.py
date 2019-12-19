@@ -21,21 +21,25 @@ def join_team():
     if form.validate_on_submit():
         sql_connection = SQL_Connect()
         if sql_connection.is_up():
-            sql_command = "SELECT team_password FROM teams WHERE id=:identification"
-            data = sql_connection.connection.query(sql_command, identification=form.team_id.data)
+            sql_command = "SELECT team_password FROM teams WHERE team_id=:id"
+            data = sql_connection.connection.query(sql_command, id=form.team_id.data)
             if data.first() is None:
-                flash("Team Doesnt Exist")
+                flash("Team Does not Exist")
                 return redirect("/profile/join_team")
             if check_password_hash(data.first().team_password, form.team_password.data):
-                sql_command = "SELECT members FROM teams where id=:identification"
-                data = sql_connection.connection.query(sql_command, identification=form.team_id.data)
+                sql_command = "SELECT members FROM teams where team_id=:id"
+                data = sql_connection.connection.query(sql_command, ide=form.team_id.data)
                 member_list = data.first().members
+                #making the new list of users
                 if session["username"] not in member_list.split():
                     member_list += f" {session['username']}"
+                #Updating teams to use the new list
                 sql_command = "UPDATE teams SET members=:new_list"
                 sql_connection.connection.query(sql_command, new_list=member_list)
-                sql_command = "UPDATE users SET team_id=:new_id"
-                sql_connection.connection.query(sql_command, new_id=form.team_id.data)
+
+                # Make user use new team ID
+                sql_command = "UPDATE users SET team_id=:new_id WHERE id=:user_id"
+                sql_connection.connection.query(sql_command, new_id=form.team_id.data, user_id=session["user_id"])
                 current_app.logger.info(f"{session['username']} joined team with ID {form.team_id.data}")
                 flash("Joined Team Successfully")
                 return redirect("/profile/join_team")
@@ -53,20 +57,25 @@ def join_team():
 def create_team():
         form = TeamForm()
         if form.validate_on_submit():
-            if form.new_team_password != form.confirm_team_password:
+            if form.new_team_password.data != form.confirm_team_password.data:
                 flash("The Passwords did not match!")
                 return redirect("/profile/create_team")
+            if not form.new_team_name.data.isalnum():
+                flash("You team name cannot contain special characters!")
+                return redirect("/profile/create_team")
+            
             sql_connection = SQL_Connect()
             if sql_connection.is_up():
+                
                 #Removing user from a team
-                sql_command = f"SELECT members FROM teams WHERE id={session['team_id']}"
-                data = sql_connection.connection.query(sql_command)
+                sql_command = f"SELECT members FROM teams WHERE team_id=:team_id"
+                data = sql_connection.connection.query(sql_command, team_id=session["team_id"])
                 if data.first():
                     current_members = data.first().members.split()
                     if session['username'] in current_members:
                         current_members.remove(session['username'])
                     member_list = " ".join(current_members)
-                    sql_command = f"UPDATE teams SET members=:members WHERE id=:id"
+                    sql_command = f"UPDATE teams SET members=:members WHERE team_id=:id"
                     sql_connection.connection.query(sql_command, members=member_list, id=session['team_id'])
 
                 # Creating the New team
@@ -77,22 +86,18 @@ def create_team():
                 sql_connection.connection.query(sql_command, team_name=team_name, members=members, team_password=team_password)
 
                 # Getting the new Teams ID
-                sql_command = "SELECT id FROM teams where members=:members"
+                sql_command = "SELECT team_id FROM teams where members=:members"
                 data = sql_connection.connection.query(sql_command, members=session["username"])
-                team_id = data.first().id
+                team_id = data.first().team_id
 
                 # Ensuring the User is associated with their team
-                sql_command = f"UPDATE users SET team_id = {team_id} WHERE name=:username"
-                sql_connection.connection.query(sql_command, username=session["username"])
+                sql_command = f"UPDATE users SET team_id =:team_id WHERE name=:username"
+                sql_connection.connection.query(sql_command, team_id=team_id, username=session["username"])
 
-                # Adding new team to scoring table
-                sql_command = f"INSERT INTO team_solves(team_id) VALUES ({team_id})"
-                sql_connection.connection.query(sql_command)
-
-                
+                # Updating the session and then logging it 
                 session['team_id'] = team_id
                 current_app.logger.info(f"{session['username']} created team with ID {team_id}, name {form.new_team_name.data}")
-                flash("Team created Successfully, and joined")
+                flash("Team created and joined team successfully!")
                 return redirect("/index")
             else:
                 flash("SQL Error 1")

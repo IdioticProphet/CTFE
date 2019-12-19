@@ -27,27 +27,41 @@ def login():
         if form.validate_on_submit():
                 sql_connection = SQL_Connect()
                 if sql_connection.is_up():
+                        #Find the users
                         sql_command = "SELECT password FROM users WHERE name=:username"
                         user_data = sql_connection.connection.query(sql_command, username=form.username.data)
-                        try:
-                                random_string = user_data[0]
-                        except:
+                        if not user_data.first():
                                 flash("Invalid Username!")
                                 return redirect("/login")
+                        #If passwords do not match
                         if not check_password_hash(user_data[0].password, form.password.data):
                                 flash("Invalid Password.")
                                 return redirect("/login")
+                        #We have the username now
                         session["username"] = form.username.data
-                        sql_command = "SELECT is_admin from users WHERE name=:username"
-                        data = sql_connection.connection.query(sql_command, username=form.username.data)
-                        if data.first().is_admin == 1:
+
+                        #Getting the user ID
+                        sql_command = "SELECT id FROM users WHERE name=:username"
+                        user_id = sql_connection.connection.query(sql_command, username=session["username"]).first().id
+                        session["user_id"] = user_id
+                        
+                        #Determine if user is admin
+                        sql_command = "SELECT * FROM admins"
+                        data = sql_connection.connection.query(sql_command, id=user_id)
+                        all_admin_id = [1]
+                        current_app.logger.info(session["user_id"] in all_admin_id)
+                        if session["user_id"] in all_admin_id:
                                 session["admin"] = True
                         else:
                                 session["admin"] = False
+
+                        #Determine the users team_id
                         sql_command = "SELECT team_id FROM users WHERE name=:username"
                         data = sql_connection.connection.query(sql_command, username=form.username.data)
                         if data.first().team_id is not None:
                                 session["team_id"] = data.first().team_id
+                                
+                        #who just logged in
                         current_app.logger.info(f"{form.username.data} logged in successfully, with team id {data.first().team_id}")
                         flash("Login Succeeded!")
                         return redirect("/")
@@ -65,25 +79,22 @@ def logout():
 def register():
         form = RegisterForm()
         if form.validate_on_submit():
-                if " " in form.username.data.split():
-                        flash("Your username should not contain spaces!")
+                if not form.username.data.isalnum():
+                        flash("Your username should not contain special characters!")
                         return redirect("/register")
                 if form.password.data != form.check_password.data:
                         flash("Passwords did not match!")
                         return redirect("/register")
                 sql_connection = SQL_Connect()
-                sql_command = ("SELECT name FROM users")
-                output_data = sql_connection.connection.query(sql_command)
-                all_names = [x.name.lower() for x in output_data]
-                if form.username.data.lower() in all_names:
+                sql_command = ("SELECT name FROM users WHERE name=:username")
+                output_data = sql_connection.connection.query(sql_command, username=form.username.data)
+                if output_data:
                         flash("Username is already taken!")
                         sql_connection.disconnect()
                         return redirect("/register")
-                sql_command = "SELECT email FROM users"
-                output_data = sql_connection.connection.query(sql_command)
-                all_emails = [x.email.lower() for x in output_data]
-                
-                if form.email.data.lower() in all_emails:
+                sql_command = "SELECT email FROM users WHERE email=:email"
+                output_data = sql_connection.connection.query(sql_command,email=form.email.data.lower())
+                if output_data:
                         flash("Account already exists with that Email")
                         sql_connection.disconnect()
                         return redirect("/register")
@@ -114,14 +125,14 @@ def dashboard():
                         flash("You have to create or join a team before you can access the dashboard! Do so from your profile.")
                         return redirect("/index")
                 sql_connection = SQL_Connect()
-                sql_command = "SELECT * FROM ctf_problems"
+                sql_command = "SELECT * FROM problems"
                 output_data = sql_connection.connection.query(sql_command)
                 if output_data is not None:
                     dashboard_data = output_data.all()
                     flash(dashboard_data)
-                    category_names = sql_connection.connection.query("SELECT DISTINCT category FROM ctf_problems").all()
-                    sql_command = f"SELECT * FROM team_solves WHERE team_id={session['team_id']}"
-                    solved_questions = sql_connection.connection.query(sql_command).as_dict()
+                    category_names = sql_connection.connection.query("SELECT DISTINCT category FROM problems").all()
+                    sql_command = f"SELECT * FROM team_solves WHERE team_id=:team_id"
+                    solved_questions = sql_connection.connection.query(sql_command, team_id=session['team_id']).as_dict()
                     current_app.jinja_env.globals.update(check_func=check_func)
                     return render_template("dashboard.html", category_names=category_names, solved_questions=solved_questions)
                 else:

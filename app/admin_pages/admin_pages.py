@@ -12,7 +12,7 @@ def allowed_file(filename):
 
 def provision_number():
     sql_connection = SQL_Connect()
-    sql_command = ("SELECT MAX(ID) AS ID FROM ctf_problems LIMIT 1")
+    sql_command = ("SELECT MAX(ID) AS ID FROM problems LIMIT 1")
     try:
         output_data = sql_connection.connection.query(sql_command)
     except:
@@ -22,9 +22,13 @@ def provision_number():
 
 @admin.before_request
 def admin1():
-    if "admin" not in session.keys():
-        flash("Page Not Found")
-        return redirect("/404")
+    if "admin" in session.keys():
+            if not session["admin"]:
+                    flash("Page not Found")
+                    return redirect("/404")
+    else:
+            flash("Page not Found")
+            return redirect("/404")
 
 @admin.route("/")
 @admin.route("/dashboard")
@@ -47,20 +51,20 @@ def create_problem():
                         if allowed_file(f.filename):
                                 f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
                         form.unique_id.data = provision_number()+1
+                        
                         #Updating the Problem Database
-                        sql_command = "INSERT INTO ctf_problems(problem_name, short_summary, summary, unique_id, category) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category)"
+                        sql_command = "INSERT INTO problems(problem_name, short_summary, summary, unique_id, category) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category)"
                         sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data)
                         #Updating the Flag Database
                         try:
-                                sql_command = "INSERT INTO ctf_problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"
+                                sql_command = "INSERT INTO problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"
                                 sql_connection.connection.query(sql_command, unique_id=form.unique_id.data, flag=form.solution_flag.data, points=form.point_value.data)
                         except:
                                 flash("Error! Duplicate Flag")
-                                sql_connection.connection.query(f"DELETE FROM ctf_problems WHERE id={form.unique_id.data}")
+                                sql_command = "DELETE FROM problems WHERE id=:id"
+                                sql_connection.connection.query(sql_command, id=form.unique_id.data)
                                 return render_template("create_problem.html", form=form)
-                        #Updating the teams database
-                        sql_command = f"ALTER TABLE team_solves ADD problem_{form.unique_id.data} BOOLEAN DEFAULT FALSE"
-                        sql_connection.connection.query(sql_command)
+                        
                         flash("Problem Created successfully.")
                         return redirect("/admin/create_problem")
                 else:
@@ -77,7 +81,7 @@ def edit_problem():
                 return render_template("edit_problem.html")
         else:
                 sql_connection = SQL_Connect()
-                sql_command = "SELECT * FROM ctf_problems WHERE unique_id=:unid"
+                sql_command = "SELECT * FROM problems WHERE unique_id=:unid"
                 data=sql_connection.connection.query(sql_command, unid=problem_id)
                 if not data.first():
                         flash("Something went wrong with the query. The Id is probably wrong")

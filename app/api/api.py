@@ -7,7 +7,7 @@ api = Blueprint("api", "api", url_prefix="/api")
 @api.route("/problems")
 def app_api():
     sql_connection = SQL_Connect()
-    sql_command = "SELECT * FROM ctf_problems"
+    sql_command = "SELECT * FROM problems"
     if not sql_connection.is_up():
         return jsonify({"response": 405, "description": "SQL_NOT_UP"})
     output_data = sql_connection.connection.query(sql_command)
@@ -16,7 +16,7 @@ def app_api():
 @api.route("/provision_number")
 def provision_number():
     sql_connection = SQL_Connect()
-    sql_command = "SELECT MAX(ID) AS ID FROM ctf_problems LIMIT 1"
+    sql_command = "SELECT MAX(ID) AS ID FROM problems LIMIT 1"
     try:
         output_data = sql_connection.connection.query(sql_command)
     except:
@@ -27,43 +27,49 @@ def provision_number():
 @api.route("/flag_submit", methods=["GET"])
 def flag_submit():
     problem = request.args.get("unique_id", None)
-    team = request.args.get("team_id", None)
+    team = session["team_id"]#request.args.get("team_id", None)
+    return(jsonify({'team': team}))
     flag = request.args.get("flag", None)
     if problem == None or team == None or flag == None or not problem.isdigit() or not team.isdigit():
         return(jsonify({"response": "206", "description": "an input was incorrect"}))
     sql_connection = SQL_Connect()
-    sql_command = "SELECT * FROM ctf_problem_check WHERE unique_id=:problem_id AND flag=:flag"
+    sql_command = "SELECT * FROM problem_check WHERE unique_id=:problem_id AND flag=:flag"
     data = sql_connection.connection.query(sql_command, problem_id=problem, flag=flag)
     if not data.as_dict(): return(jsonify({"response": "215","description": "The flag is incorrect, or the unique ID was tampered with."}))
     else: score_to_add = data.first().score
-    sql_command = f"SELECT problem_{problem} FROM team_solves WHERE team_id={team} AND problem_{problem}=0"
-    data = sql_connection.connection.query(sql_command)
-    if not data.as_dict():
+    # from team solves figure out if problem is solved
+    sql_command = f"SELECT team_id, problem_id FROM team_solves WHERE team_id=:team_id AND problem_id=:problem_id"
+    data = sql_connection.connection.query(sql_command, team_id=team, problem_id=problem)
+    if data.as_dict():
         # if the problem is all ready solved, the team ID is invalid, or problem id is invalid
-        return(jsonify({'response': '216', 'description': 'Problem is already solved, teamID is invalid, or the problemID is invalid. try again'}))
-    elif eval(f"data.first().problem_{problem}") == 0:
+        return(jsonify({'response': '216', 'description': 'Problem is already solved'}))
+    elif data:
         # give the team points, set it to 1
-        sql_command = f"UPDATE team_solves SET problem_{problem}=1 WHERE team_id={team}"
+        sql_command = "INSERT INTO team_solves(team_id, problem_id) VALUES (:team_id, :problem_id)"
         sql_connection.connection.query(sql_command)
-        sql_command = f"SELECT score FROM teams WHERE id={team}"
-        data = sql_connection.connection.query(sql_command)
+        sql_command = "SELECT score FROM teams WHERE team_id=:team"
+        data = sql_connection.connection.query(sql_command, team=team)
         current_score = data.first().score
         new_score = current_score+score_to_add
-        sql_command = f"UPDATE teams SET score={new_score} WHERE id={team}"
-        sql_connection.connection.query(sql_command)
-        # Filling in the Scoring_Feed so that we can keep track of who solves what when
-        team_name_command= f"SELECT team_name FROM teams WHERE id={team}"
-        solved_problem_name_cmd = f"SELECT problem_name FROM ctf_problems WHERE unique_id={problem}"
-        score_gained = score_to_add
-        team_name = sql_connection.connection.query(team_name_command).first().team_name
-        solved_problem_name = sql_connection.connection.query(solved_problem_name_cmd).first().problem_name
-        sql_command = "INSERT INTO scoring_feed(team_name, problem_solved, point_value, new_total) VALUES ({team_name}, {solved_problem_name}, {score_gained}, {new_score})"
+        sql_command = f"UPDATE teams SET score=:new_score WHERE team_id=:team"
+        sql_connection.connection.query(sql_command, new_score=new_score, team=team)
+        
+        # finding the teamname using your teamid
+        team_name_command= f"SELECT team_name FROM teams WHERE team_id=:team"
+        team_name = sql_connection.connection.query(team_name_command, team=team).first().team_name
+
+        #obtain the problem name of what was solved
+        solved_problem_name_cmd = f"SELECT problem_name FROM ctf_problems WHERE unique_id=:problem"
+        solved_problem_name = sql_connection.connection.query(solved_problem_name_cmd, problem).first().problem_name
+
+        #update the scoring feed after a solve
+        sql_command = "INSERT INTO scoring_feed(team_name, problem_solved, point_value, new_total) VALUES (:team_name, :problem_solved, :point_value, :new_total)"
+        sql_connection.connection.query(sql_command, team_name=team_name, problem_solved=solved_problem_name, point_value=score_to_add, new_total=new_score)
         current_app.logger.info(f"{team_name} solved problem {solved_problem_name}")
         return(jsonify({'response': "202", "description": "problem successfully solved"}))
     else:
         return(jsonify({'response': "404"}))
         
-    return(jsonify({'problem': f"problem_{problem}", 'team': team, 'flag': flag}))
 
 @api.route("/return_team_scores", methods=["GET"])
 def return_team_scores():
