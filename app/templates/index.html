@@ -106,7 +106,8 @@ body {
 {%endblock%}
 </head>
 {%block content%}
-<div class="jumbotron">
+<div class="jumbotron jumbotron-fluid">
+<div class="container">
 <div class="big-text">Protect The Castle CTF starts in...</div>
 <hr>
 <div class="big-center">
@@ -130,6 +131,7 @@ body {
 </div>
 </div>
 <div style="display:flex; justify-content:center; padding-top:10px;"><b>Will you be ready?</b></div>
+</div>
 </div>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
