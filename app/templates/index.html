@@ -72,13 +72,6 @@ var x = setInterval(function() {
 {%endblock%}
 </head>
 {%block content%}
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-	{% for message in messages %}
-	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
-	{% endfor %}
-{% endif %}
-{% endwith %}
 <div class="jumbotron">
 <div class="big-text">Protect The Castle CTF starting in...</div>
 <hr>
@@ -105,9 +98,15 @@ var x = setInterval(function() {
 </div>
 </div>
 </div>
-
 <div style="display:flex; justify-content:center; padding-top:10px;"><b>Will you be ready?</b></div>
 </div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
 
 
 {%endblock%}

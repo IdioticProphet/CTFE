@@ -6,4 +6,6 @@ class Config:
         MAX_CONTENT_LENGTH = 16 * 1024 * 1024
         DEBUG = True
         SECRET_KEY = os.urandom(32)
+        SQL_PASSWORD = "Epic_SQL_Password!23"
+        ALLOW_DASHBOARD= False
         basedir = os.path.abspath

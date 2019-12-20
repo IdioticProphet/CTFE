@@ -117,7 +117,10 @@ def register():
 def dashboard():
         if "username" not in session.keys():
                 flash("You have to login before accessing the dashboard!")
-                return redirect("/index")             
+                return redirect("/index")  
+        if not current_app.config["ALLOW_DASHBOARD"]:
+                flash("The CTF has not started yet!")
+                return redirect("/")           
         else:
                 if session["team_id"] == 0:
                         flash("You have to create or join a team before you can access the dashboard! Do so from your profile.")
@@ -144,4 +147,7 @@ def scoreboard():
         if "username" not in session.keys():
                 flash("You need to login to view scoreboard, because I said so!")
                 return redirect("index")
+        if not current_app.config["ALLOW_DASHBOARD"]:
+                flash("The CTF has not started yet!")
+                return redirect("/")
         return render_template("scoreboard.html")
