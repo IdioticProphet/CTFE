@@ -1,5 +1,0 @@
-flask
-flask_wtf
-records
-pymysql
-flask-markdown
