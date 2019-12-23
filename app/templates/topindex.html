@@ -17,6 +17,7 @@
   min-height: 100%;
 		}
 body {
+  font-size: 16px;
   margin-bottom: 60px; /* Margin bottom by footer height */
   padding-top: 60px;
 }
@@ -37,17 +38,25 @@ body {
          user-select: none;
          }
 .logo-image{
-    background-size: 30px 30px;
-    bavkground-position: 0 0;
+    background-size: 1.5em 1.5em;
+    background-position: 0 0;
     background-image: url({{url_for("static", filename="pictures/logo.png")}})
 }
 .logo-eye{
-    margin: 2px 0;
-    width:30px;
-    height:30px;
+    margin: .1em 0;
+    width:1.5em;
+    height:1.5em;
     float: left;
     display:block;
     margin-right: 4px;
+}
+.profile-eye{
+    margin: 2px 0;
+    width:1em;
+    height:1em;
+    float: left;
+    display:block;
+    margin-right: .3em;
 }
       </style>
       {% endblock %}
@@ -93,7 +102,7 @@ body {
             {% if session["username"] %}
             <ul class="navbar-nav ml-auto">
                <li class="nav-item">
-                  <a class="nav-link" href="/profile">Profile</a>
+                  <span class="profile_image profile_eye"><a class="nav-link" href="/profile">Profile</a>
                </li>
             </ul>
             {% endif %}
