@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, Blueprint, session, flash, request, current_app
 from ..db import *
 from operator import itemgetter
+from itsdangerous import Signer
 
 api = Blueprint("api", "api", url_prefix="/api")
 
@@ -93,3 +94,65 @@ def return_score_feed():
         item["when_solved"] = item["when_solved"].isoformat()
     dictionary = sorted(data, key=itemgetter('team_name'), reverse=True)
     return(jsonify(dictionary))
+
+@api.route("/leave_team", methods=["GET"])
+def leave_team():
+    team_id = session["team_id"]
+    uuid = session["user_id"]
+    sql_connection = SQL_Connect()
+    if not sql_connection.is_up():
+        return jsonify({"response": 405, "description": "SQL_NOT_UP"})
+    # Changing the teams table
+    sql_command = "SELECT members FROM teams WHERE team_id=:tid"
+    data = sql_connection.connection.query(sql_command, TID=team_id).first()
+    if not data:
+        return jsonify({"response": 406, "description": "somehow that person was not in a team..."})
+    new_members = "".join(data.members.split(" ").remove(session["username"]))
+    if new_members == data.members:
+        return jsonify({"response": 406, "description": "somehow that person was not in that team..."})
+    sql_command = "UPDATE teams SET members=:newmembers WHERE team_id=:TID"
+    sql_connection.connection.query(sql_command, newmembers=new_members, TID=team_id)
+    # Changing the users table
+    sql_command = "UPDATE users SET team_id=0 WHERE user_id=:uuid"
+    sql_connection.connection.query(sql_command, uuid=uuid)
+    # Update the session
+    session["team_id"] = 0
+    # Reuturn our success
+    return jsonify({"response": 201, "description": "It Worked!"})
+
+@api.route("/join_team", methods=["GET"])
+def join_team():
+    new_team_id = request.args.get("team_id")
+    new_team_password = request.args.get("team_password")
+    if not new_team_id.isnumeric():
+        flash("Team ID Needs to be a number!")
+        return jsonify({"response": "215", "description": "Team ID is not a number"})
+    uuid = session["user_id"]
+    current_team_id = session["team_id"]
+    sql_connection = SQL_Connect()
+    if not sql_connection.is_up():
+        return jsonify({"response": 405, "description": "SQL_NOT_UP"})
+    sql_command = "SELECT team_password FROM teams WHERE team_id=:id"
+    data = sql_connection.connection.query(sql_command, id=current_team_id)
+    if data.first() is None:
+        return jsonify({"response": 406, "description": "User is not a part of that team"})
+    if check_password_hash(data.first().team_password, new_team_password):
+        sql_command = "SELECT members FROM teams where team_id=:id"
+        data = sql_connection.connection.query(sql_command, id=new_team_id)
+        member_list = data.first().members
+        #making the new list of users
+        if session["username"] not in member_list.split():
+            member_list += f" {session['username']}"
+        #Updating teams to use the new list
+        sql_command = "UPDATE teams SET members=:new_list WHERE team_id=:id"
+        sql_connection.connection.query(sql_command, new_list=member_list, id=new_team_id)
+
+        # Make user use new team ID
+        sql_command = "UPDATE users SET team_id=:new_id WHERE id=:user_id"
+        sql_connection.connection.query(sql_command, new_id=new_team_id, user_id=session["user_id"])
+        current_app.logger.info(f"{session['username']} joined team with ID {new_team_id}")
+        session["team_id"] = new_team_id
+        flash("Joined Team Successfully")
+        return jsonify({"response": 201, "Description": "It Worked!"})
+    else:
+        flash("Password is incorrect")

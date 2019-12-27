@@ -2,6 +2,8 @@ from flask import Flask, Blueprint, session, render_template, flash, redirect, c
 from ..forms import TeamForm, ChangeTeamForm
 from ..db import *
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import Signer
+from collections import namedtuple
 
 profile_blueprint = Blueprint("profile_blueprint", __name__, url_prefix="/profile")
 
@@ -13,7 +15,19 @@ def is_logged():
 
 @profile_blueprint.route("/")
 def profile():
-    return render_template('profile.html')
+    s = Signer(current_app.config["SECRET_KEY"])
+    #sql_connection = SQL_Connect()
+    #if sql_connection.is_up():
+    #    sql_command = "SELECT * FROM teams WHERE team_id=:TID"
+    #    team_data= sql_connection.connection.query(sql_command, TID=session["team_id"]).all()[0]
+    #    team_data.team_id = s.sign(team_data.team_id)
+    if session["team_id"] == 0:
+        form = ChangeTeamForm()
+        tnp = namedtuple("team", "team_id, team_name, members")
+        team = tnp(0, "None", session["username"])
+    else:
+        form = None
+    return render_template('profile.html', team=team, form=form)
 
 @profile_blueprint.route("/join_team", methods=["POST", "GET"])
 def join_team():
