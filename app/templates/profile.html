@@ -4,8 +4,10 @@
 {% extends "topindex.html"%}
 {% block head %}
 {{super()}}
+{% set name = 'pictures/{}.png'.format(session["username"]) %}
 <style>
 .profile-boxes {
+    padding-top: 20px;
     height: 100%;
     display: flex;
     flex-direction: row;
@@ -19,36 +21,201 @@
 .profile-boxes > .inside-right {
     width: 45%;
 }
+.card {
+    margin-bottom: 20px;
+}
+.modal-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
 
+}
+.my_profile {
+    display: grid;
+    height: 100%;
+    grid-template:  [row1-start] "pfpicture information" auto[row1-end]
+                    [row2-start] "imgupload information" auto[row2-end]
+                                / 50% 50%;
+}
+.profile-picture-box {
+    grid-area: pfpicture;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    <!--background-image: url("{{url_for('static', filename=name)}}");-->
+}
+
+.information-box {
+    grid-area: information;
+    margin: 10px;
+}
+
+.imgupload{
+    grid-area: imgupload;
+
+
+}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+        Vue.component('confirm_modal', {
+            delimiters: ["!!!", "!!!"],
+
+            methods: {
+                do_thing: function() {
+                    insert_modal(element)	
+                }
+        
+            },
+            props: ["team_name", "team_id"],
+            template: `
+            <div id="team-modal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Are you sure you want to leave team !!! team_name !!!</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body modal-flex">
+                          <button id="confirm-leave-button" class="btn btn-success" onclick="leave_team(this.team_id)" :team_id="team_id">  Confirm </button> <button class="btn btn-danger" onclick="toggle_modal()"> Cancel </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            `
+        });
+function change_team_modal(){
+    var element0 = document.getElementById("leave_team")
+    var team_name = element0.getAttribute("team_name");
+    var team_id = element0.getAttribute("team_id");
+    document.getElementById("modal-div").innerHTML = `<confirm_modal team_name=${team_name} team_id=${team_id}> </confirm_modal>`;
+    new Vue({ el: "#modal-div"});
+    toggle_modal();
+}
+function toggle_modal() {
+    $(document).ready(function(){
+        $(`#team-modal`).modal("toggle");
+       });
+}
+function leave_team(team_id){
+  document.getElementById("confirm-leave-button").innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Confirm';
+  fetch(`/api/leave_team`)
+    .then(response => {
+        var response = response.json();
+        return response;
+    })
+    .then(json => {
+        var data = json;
+        after_data();
+    })
+  
+}
+
+function join_team() {
+    var team_id = document.getElementById("team_id").value
+    var team_password = document.getElementById("team_password").value
+    document.getElementById("join_submit").innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submit'
+    fetch(`/api/join_team?team_id=${team_id}&team_password=${team_password}`)
+    .then(response => {
+        var response = response.json();
+        return response;
+    })
+    .then(json => {
+        var data = json;
+        location.reload(true);
+    })
+}
+async function after_data() {
+    document.getElementById("confirm-leave-button").innerHTML = '<i class="fas fa-check"></i> Success!';
+    await sleep("1000");
+    toggle_modal();
+    location.reload(true);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+</script>
 {% endblock %}
 </head>
 <body>
 {% block content %}
-
+</div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
+<div style="display:hidden;" id="modal-div"></div>
 <div class="profile-boxes">
     <div class="inside-left">
+        {% if team.team_id != 0 %}
         <div class="card card-default">
-            <div class="card-header">card Heading</div>
-            <div class="card-body">card Content</div>
+            <div class="card-header">Current Team  :  {{team.team_name}}</div>
+            <div class="card-body">
+                Members: 
+                <ul>
+                {% with name = team.members.split(" ") %}
+                    {% for members in name %}
+                        <ol>{{members}}</ol>
+                    {% endfor %}
+                {% endwith %}
+                </ul>
+
+                <button id="leave_team" team_name="{{team.team_name}}" team_id="{{team.team_id}}" onClick="change_team_modal()" class="float-right btn btn-danger"> Leave Team </button>
+            </div>
         </div>
-        
+        {% endif %}
+        {% if team.team_id == 0 %}
         <div class="card card-default">
-            <div class="card-header">card Heading</div>
-            <div class="card-body">card Content</div>
+            <div class="card-header">Join A Team</div>
+            <div class="card-body">
+                Note: If you need to create a team, you need to do so <a href="/profile/create_team"> here </a>
+                <hr>
+                <div class="form-group">
+                    {{ form.team_id.label }}<br>
+                    {{ form.team_id(class="form-control", placeholder="Team ID") }} <br>
+                </div>
+                <div class = "form-group">
+                    {{ form.team_password.label }} <br>
+                    {{ form.team_password(class="form-control", placeholder="Team Password") }}<br>
+                </div>
+                <button id="join_submit" class="form-control" onclick="join_team()"> Submit </button>
+                </div>
+            </div>
+            {% endif %}
+
          </div>
-    </div>
-    
+
+        
+<!- right -->
     <div class="inside-right">
         <div class="card card-default">
-            <div class="card-header">card Heading</div>
-            <div class="card-body">card Content</div>
-         </div>
+            <div class="card-header">My Profile</div>
+                <div class="card-body">
+                    <div class="my_profile">
+                        <div class="profile-picture-box" style="border-style: solid; border-width: 1px; border-color: black;">
+                            <img src="/static/pictures/{{session['username']}}.png" alt="{{session['username']}}" width="240" height="240">
+                        </div>
+                        <div class="information-box">
+                            jjjjjj
+                        </div>
+                        <div class="imgupload">
+                            jjjjjjjjjjjjj
+                        </div>
+                    </div>
+                 </div>
+        </div>
          <div class="card card-default">
-            <div class="card-header">card Heading</div>
-            <div class="card-body">card Content</div>
+            <div class="card-header">About</div>
+            <div class="card-body">This CTF was developed by Joshua Cantrell with the contribution of the homepage from Isabelle Brown, Developed for use in the PTC-CTF, but also intented to be an open source CTF framework</div>
          </div>
     </div>
+</div>
 </div>
 
 {% endblock %}
