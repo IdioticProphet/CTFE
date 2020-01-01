@@ -81,9 +81,9 @@ def create_team():
             if form.new_team_password.data != form.confirm_team_password.data:
                 flash("The Passwords did not match!")
                 return redirect("/profile/create_team")
-            allowed_symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy-_ "
+            allowed_symbols = "0987654321ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy-_ "
             if not all(c in allowed_symbols for c in form.new_team_name.data):
-                flash("You team name cannot contain special characters or spaces!")
+                flash("You team name can only contain the characters 0-9, a-Z, - _, and Space")
                 return redirect("/profile/create_team")
             
             sql_connection = SQL_Connect()

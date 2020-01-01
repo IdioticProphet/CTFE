@@ -2,6 +2,7 @@ from flask import Flask, jsonify, Blueprint, session, flash, request, current_ap
 from ..db import *
 from operator import itemgetter
 from itsdangerous import Signer
+from werkzeug.security import check_password_hash
 
 api = Blueprint("api", "api", url_prefix="/api")
 
@@ -132,14 +133,11 @@ def join_team():
         flash("Team ID Needs to be a number!")
         return jsonify({"response": "215", "description": "Team ID is not a number"})
     uuid = session["user_id"]
-    current_team_id = session["team_id"]
     sql_connection = SQL_Connect()
     if not sql_connection.is_up():
         return jsonify({"response": 405, "description": "SQL_NOT_UP"})
-    sql_command = "SELECT team_password FROM teams WHERE team_id=:id"
-    data = sql_connection.connection.query(sql_command, id=current_team_id)
-    if data.first() is None:
-        return jsonify({"response": 406, "description": "User is not a part of that team"})
+    sql_command = "SELECT * FROM teams WHERE team_id=:nTID"
+    data = sql_connection.connection.query(sql_command, nTID=new_team_id)
     if check_password_hash(data.first().team_password, new_team_password):
         sql_command = "SELECT members FROM teams where team_id=:id"
         data = sql_connection.connection.query(sql_command, id=new_team_id)
