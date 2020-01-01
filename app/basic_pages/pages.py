@@ -23,6 +23,12 @@ def index():
 def login():
         form = LoginForm()
         if form.validate_on_submit():
+                #if form.username.data == "admin":
+                #        session["username"] = "admin"
+                #        session["user_id"] = 1 
+                #        session["admin"] = True
+                #        session["team_id"] = 1
+                #        return redirect("/profile")
                 sql_connection = SQL_Connect()
                 if sql_connection.is_up():
                         #Find the users

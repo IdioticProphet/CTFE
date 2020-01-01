@@ -103,17 +103,21 @@ def leave_team():
     if not sql_connection.is_up():
         return jsonify({"response": 405, "description": "SQL_NOT_UP"})
     # Changing the teams table
-    sql_command = "SELECT members FROM teams WHERE team_id=:tid"
+    sql_command = "SELECT members FROM teams WHERE team_id=:TID"
     data = sql_connection.connection.query(sql_command, TID=team_id).first()
     if not data:
         return jsonify({"response": 406, "description": "somehow that person was not in a team..."})
-    new_members = "".join(data.members.split(" ").remove(session["username"]))
+    new_member_list = data.members.split(" ").remove(session["username"])
+    if new_member_list:
+        new_members = "".join(new_member_list)
+    else:
+        new_members = ""
     if new_members == data.members:
         return jsonify({"response": 406, "description": "somehow that person was not in that team..."})
     sql_command = "UPDATE teams SET members=:newmembers WHERE team_id=:TID"
     sql_connection.connection.query(sql_command, newmembers=new_members, TID=team_id)
     # Changing the users table
-    sql_command = "UPDATE users SET team_id=0 WHERE user_id=:uuid"
+    sql_command = "UPDATE users SET team_id=0 WHERE id=:uuid"
     sql_connection.connection.query(sql_command, uuid=uuid)
     # Update the session
     session["team_id"] = 0

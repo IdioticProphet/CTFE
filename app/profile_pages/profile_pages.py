@@ -15,19 +15,22 @@ def is_logged():
 
 @profile_blueprint.route("/")
 def profile():
-    s = Signer(current_app.config["SECRET_KEY"])
-    #sql_connection = SQL_Connect()
-    #if sql_connection.is_up():
-    #    sql_command = "SELECT * FROM teams WHERE team_id=:TID"
-    #    team_data= sql_connection.connection.query(sql_command, TID=session["team_id"]).all()[0]
-    #    team_data.team_id = s.sign(team_data.team_id)
-    if session["team_id"] == 0:
-        form = ChangeTeamForm()
+    sql_connection = SQL_Connect()
+    if sql_connection.is_up():
         tnp = namedtuple("team", "team_id, team_name, members")
-        team = tnp(0, "None", session["username"])
-    else:
-        form = None
-    return render_template('profile.html', team=team, form=form)
+        if session["team_id"] == 0:
+            form = ChangeTeamForm()
+            team = tnp(0, "None", session["username"])
+        else:
+            sql_command = "SELECT * FROM teams WHERE team_id=:TID"
+            team_data = sql_connection.connection.query(sql_command, TID=session["team_id"]).all()[0]
+            form = None
+            sql_command = "SELECT * FROM teams WHERE team_id=:team_id"
+            data = sql_connection.connection.query(sql_command, team_id=session["team_id"])
+            team_name = data.first().team_name
+            team_members = data.first().members
+            team = tnp(session["team_id"], team_name, team_members)
+        return render_template('profile.html', team=team, form=form)
 
 @profile_blueprint.route("/join_team", methods=["POST", "GET"])
 def join_team():
@@ -78,8 +81,9 @@ def create_team():
             if form.new_team_password.data != form.confirm_team_password.data:
                 flash("The Passwords did not match!")
                 return redirect("/profile/create_team")
-            if not form.new_team_name.data.isalnum():
-                flash("You team name cannot contain special characters!")
+            allowed_symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy-_ "
+            if not all(c in allowed_symbols for c in form.new_team_name.data):
+                flash("You team name cannot contain special characters or spaces!")
                 return redirect("/profile/create_team")
             
             sql_connection = SQL_Connect()
