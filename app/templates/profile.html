@@ -42,7 +42,7 @@
     margin: 10px;
     display: flex;
     justify-content: center;
-    <!--background-image: url("{{url_for('static', filename=name)}}");-->
+    background-image: url("{{url_for('static', filename=name)}}");
 }
 
 .information-box {
@@ -58,6 +58,35 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
+        Vue.component('generic_modal',{
+            delimiters: ["!!!", "!!!"],
+
+            methods: {
+                do_thing: function() {
+                    insert_modal(element)
+                }
+            },
+            props: ["top_text", "bottom_text"],
+            template: `
+            <div id="team-modal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">!!! top_text !!!</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body modal-flex">
+                            !!! bottom_text !!!
+                        <button class="btn btn-danger" onclick="toggle_modal()"> Close </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            `
+        });
+
         Vue.component('confirm_modal', {
             delimiters: ["!!!", "!!!"],
 
@@ -86,6 +115,11 @@
                   </div>
             `
         });
+
+function change_password_modal() {
+    document.getElementById("modal-div").innerHTML = `<generic_modal top_text="" bottom_text="">`;
+}
+
 function change_team_modal(){
     var element0 = document.getElementById("leave_team")
     var team_name = element0.getAttribute("team_name");
@@ -114,9 +148,9 @@ function leave_team(team_id){
 }
 
 function join_team() {
-    var team_id = document.getElementById("team_id").value
-    var team_password = document.getElementById("team_password").value
-    document.getElementById("join_submit").innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submit'
+    var team_id = document.getElementById("team_id").value;
+    var team_password = document.getElementById("team_password").value;
+    document.getElementById("join_submit").innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Submit';
     fetch(`/api/join_team?team_id=${team_id}&team_password=${team_password}`)
     .then(response => {
         var response = response.json();
@@ -126,6 +160,43 @@ function join_team() {
         var data = json;
         location.reload(true);
     })
+}
+
+function change_password() {
+    document.getElementById("password_submit").innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div> Change Password';
+    document.getElementById("new_password").classList.remove("is-invalid");
+    document.getElementById("confirm_new_password").classList.remove("is-invalid");
+    var current_password = document.getElementById("current_password").value;
+    var new_password = document.getElementById("new_password").value;
+    var confirm_new_password = document.getElementById("confirm_new_password").value;
+    if (new_password != confirm_new_password) {
+        document.getElementById("password_submit").innerHTML = '<i class="fas fa-times"></i> Password Do Not Match!';
+        document.getElementById("new_password").classList.add("is-invalid");
+        document.getElementById("confirm_new_password").classList.add("is-invalid");
+        after_data2();
+    } else {
+        fetch(`/api/change_password?current_password=${current_password}&new_password=${new_password}`)
+    .then(response => {
+        var response = response.json();
+        return response;
+    })
+    .then(json => {
+        var data = json;
+        console.log(data);
+        if (data.response == 200){
+            document.getElementById("password_submit").innerHTML = '<i class="fas fa-check"></i> Password Changed';
+            after_data2();
+        } else {
+            document.getElementById("password_submit").innerHTML = '<i class="fas fa-times"></i> Current Password was Incorrect!';
+            after_data2();
+        }
+    })
+    }
+}
+
+async function after_data2() {
+    await sleep("3000");
+    document.getElementById("password_submit").innerHTML = 'Change Password'
 }
 async function after_data() {
     document.getElementById("confirm-leave-button").innerHTML = '<i class="fas fa-check"></i> Success!';
@@ -137,6 +208,8 @@ async function after_data() {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+
 </script>
 {% endblock %}
 </head>
@@ -188,7 +261,30 @@ function sleep(ms) {
                 </div>
             </div>
             {% endif %}
-
+            <div class="card card-default">
+                    <div class="card-header">Change your Password</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="current_password">Current Password</label>
+                            <br>
+                            <input id="current_password" class="form-control" name="current_password" placeholder="Current Password" type="text" value="">
+                            <br>
+                        </div>
+                        <div class="form-group">
+                                <label for="New Password">New Password</label>
+                                <br>
+                                <input id="new_password" class="form-control" name="new_password" placeholder="New Password" type="text" value="" name="password">
+                                <br>
+                        </div>
+                        <div class="form-group">
+                                <label for="confirm_password">Confirm New Password</label>
+                                <br>
+                                <input id="confirm_new_password" class="form-control" name="confirm_new_password" placeholder="Confirm New Password" type="text" value="" name="confirm_password">
+                                <br>
+                            </div>
+                        <button id="password_submit" class="form-control" onclick="change_password()"> Change Password </button>
+                    </div>
+                </div>    
          </div>
 
         
@@ -199,13 +295,19 @@ function sleep(ms) {
                 <div class="card-body">
                     <div class="my_profile">
                         <div class="profile-picture-box" style="border-style: solid; border-width: 1px; border-color: black;">
-                            <img src="/static/pictures/{{session['username']}}.png" alt="{{session['username']}}" width="240" height="240">
+                            <img src="/static/pictures/{{session['username']}}.png" style="max-height: 100%; max-width: 100%;" alt="{{session['username']}}" width="240" height="240">
                         </div>
                         <div class="information-box">
-                            jjjjjj
+                            Email Address: {{ session["email"] }}
+                            Name: {{ session["username"] }} <br>
+                            Team Name: {{ team.team_name }} <br>
+                            Team ID: {{ team.team_id }} <br>
+                            Score: {{ team.score }}<br>
+
+                            
                         </div>
                         <div class="imgupload">
-                            jjjjjjjjjjjjj
+                        
                         </div>
                     </div>
                  </div>

@@ -3,6 +3,7 @@ from werkzeug import secure_filename
 from ..forms import ProblemForm
 from ..db import SQL_Connect
 import os
+import requests
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -56,8 +57,8 @@ def create_problem():
                         form.unique_id.data = provision_number()+1
                         
                         #Updating the Problem Database
-                        sql_command = "INSERT INTO problems(problem_name, short_summary, summary, unique_id, category) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category)"
-                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data)
+                        sql_command = "INSERT INTO problems(problem_name, short_summary, summary, unique_id, category, filename) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category, :filename)"
+                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data, filename=f.filename)
                         #Updating the Flag Database
                         try:
                                 sql_command = "INSERT INTO problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"
@@ -90,4 +91,3 @@ def edit_problem():
                         flash("Something went wrong with the query. The Id is probably wrong")
                         return render_template("edit_problem.html")
                 return render_template("edit_problem.html", problem_query=data.first())
-                

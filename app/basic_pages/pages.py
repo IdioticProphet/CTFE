@@ -23,12 +23,6 @@ def index():
 def login():
         form = LoginForm()
         if form.validate_on_submit():
-                #if form.username.data == "admin":
-                #        session["username"] = "admin"
-                #        session["user_id"] = 1 
-                #        session["admin"] = True
-                #        session["team_id"] = 1
-                #        return redirect("/profile")
                 sql_connection = SQL_Connect()
                 if sql_connection.is_up():
                         #Find the users
@@ -60,11 +54,15 @@ def login():
                                 session["admin"] = False
 
                         #Determine the users team_id
-                        sql_command = "SELECT team_id FROM users WHERE name=:username"
+                        sql_command = "SELECT team_id, email FROM users WHERE name=:username"
                         data = sql_connection.connection.query(sql_command, username=form.username.data)
-                        if data.first().team_id is not None:
+                        if data.first().team_id != 0:
                                 session["team_id"] = data.first().team_id
-                                
+                        else:
+                                session["team_id"] = 0
+                        if data.first().email:
+                                session["email"] = data.first().email
+        
                         #who just logged in
                         current_app.logger.info(f"{form.username.data} logged in successfully, with team id {data.first().team_id}")
                         flash("Login Succeeded!")
@@ -84,7 +82,7 @@ def register():
         form = RegisterForm()
         if form.validate_on_submit():
                 if not form.username.data.isalnum():
-                        flash("Your username should not contain special characters!")
+                        flash("Your username should only contain letters and numbers!")
                         return redirect("/register")
                 if form.password.data != form.check_password.data:
                         flash("Passwords did not match!")
@@ -105,7 +103,7 @@ def register():
                         
                 sql_command = "SELECT * FROM users WHERE name=:username"
                 output_data = sql_connection.connection.query(sql_command, username=f"{form.username.data}")   
-                if output_data is not None:
+                if not output_data.first():
                         sql_command = "INSERT INTO users(name, display_name, email, password) VALUES(:name, :display_name,:email, :password)"
                         password = generate_password_hash(form.password.data)
                         command_output = sql_connection.connection.query(sql_command, name=form.username.data, display_name=form.real_name.data, email=form.email.data.lower(), password=password)
@@ -113,7 +111,7 @@ def register():
                         sql_connection.disconnect()
                         return redirect('index')
                 else:
-                        flash("Username is already taken")
+                        flash("Username is already taken!")
                         sql_connection.disconnect()
                         return redirect("/register")
         else:       

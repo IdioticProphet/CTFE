@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, Blueprint, session, flash, request, current_app
+from flask import Flask, jsonify, Blueprint, session, flash, request, current_app, redirect, send_from_directory
+import os
 from ..db import *
 from operator import itemgetter
 from itsdangerous import Signer
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 api = Blueprint("api", "api", url_prefix="/api")
 
@@ -158,3 +159,48 @@ def join_team():
         return jsonify({"response": 201, "Description": "It Worked!"})
     else:
         flash("Password is incorrect")
+
+@api.route("/change_password")
+def change_password():
+    user_id = session["user_id"]
+    current_password = request.args.get("current_password")
+    new_password = request.args.get("new_password")
+    if not current_password or not user_id or not current_password:
+        return jsonify({"response": 400, "description": "Missing Arguments"})
+    sql_connection = SQL_Connect()
+    if not sql_connection.is_up():
+        return jsonify({"response": 401, "description": "SQL_NOT_UP"})
+    sql_command = "SELECT password FROM users WHERE id=:uuid"
+    data = sql_connection.connection.query(sql_command, uuid=user_id)
+    if data.first() == "":
+        return jsonify({"response": 400, "description": "Username Error"})
+    pwdhash = data.first().password
+    if not check_password_hash(pwdhash, current_password):
+        return jsonify({"response": 400, "description": "Passwords do not match"})
+    sql_command = "UPDATE users SET password=:password WHERE id=:uuid"
+    sql_connection.connection.query(sql_command, password=new_password, uuid=user_id)
+    return jsonify({"response": 200, "description": "Password Successfully Changed"})
+
+UPLOAD_DIRECTORY = "./app/static/uploads/"
+@api.route("/files")
+def list_files():
+    """Endpoint to list files on the server."""
+    files = []
+    for filename in os.listdir(UPLOAD_DIRECTORY):
+        path = os.path.join(UPLOAD_DIRECTORY, filename)
+        if os.path.isfile(path):
+            files.append(filename)
+    return jsonify(files)
+
+@api.route("/files/<filename>", methods=["POST"])
+def post_file(filename):
+    return filename
+    if "/" in filename:
+        return jsonify({"response": 400, "description": "Bad Filename"})
+    with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
+        fp.write(request.data)
+        return jsonify({"response": 200, "description": "File Created"})
+
+@api.route("/files/<path:path>", methods=["GET"])
+def get_file(path):
+    return send_from_directory(os.path.abspath(UPLOAD_DIRECTORY), path, as_attachment=True)

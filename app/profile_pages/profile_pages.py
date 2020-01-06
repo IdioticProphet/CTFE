@@ -17,10 +17,10 @@ def is_logged():
 def profile():
     sql_connection = SQL_Connect()
     if sql_connection.is_up():
-        tnp = namedtuple("team", "team_id, team_name, members")
+        tnp = namedtuple("team", "team_id, team_name, members, score")
         if session["team_id"] == 0:
             form = ChangeTeamForm()
-            team = tnp(0, "None", session["username"])
+            team = tnp(0, "Default Team", session["username"], 0)
         else:
             sql_command = "SELECT * FROM teams WHERE team_id=:TID"
             team_data = sql_connection.connection.query(sql_command, TID=session["team_id"]).all()[0]
@@ -29,6 +29,7 @@ def profile():
             data = sql_connection.connection.query(sql_command, team_id=session["team_id"])
             team_name = data.first().team_name
             team_members = data.first().members
+            team_points = data.first().score
             team = tnp(session["team_id"], team_name, team_members)
         return render_template('profile.html', team=team, form=form)
 

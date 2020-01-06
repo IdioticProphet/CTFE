@@ -7,5 +7,5 @@ class Config:
         DEBUG = True
         SECRET_KEY = os.urandom(32)
         SQL_PASSWORD = "Epic_SQL_Password!23"
-        ALLOW_DASHBOARD= False
+        ALLOW_DASHBOARD= True
         basedir = os.path.abspath

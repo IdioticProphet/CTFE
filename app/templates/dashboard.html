@@ -38,6 +38,8 @@ Vue.component('modal-maker',{
 				items: [],
 				name: null,
 				summary: null,
+				filename: null,
+				ok: false,
 			}
 		},
 		
@@ -53,7 +55,12 @@ Vue.component('modal-maker',{
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         </button>
       </div>
-      <div id="problem-summary" class="modal-body"><span v-html="summary"></span></div>
+			<div id="problem-summary" class="modal-body">
+				<span v-html="summary"></span>
+				<div v-if='ok'>
+					<a v-bind:href="filename">Download File</a>
+				</div>
+			</div>
 	  <form action="" method="POST" name="flag" id ="flag_form" onkeypress="return event.keyCode != 13">
       <div class="modal-footer flag-footer flag-form">
 		<div class="flag-left">
@@ -89,7 +96,12 @@ Vue.component('modal-maker',{
 							if (data[i].unique_id == button_id) {
 								this.name = data[i].problem_name;
 								this.summary = marked(data[i].summary);
-								
+								if (data[i].filename == "") {
+									this.ok = false;
+								} else {
+									this.ok = true;
+									this.filename = "/static/uploads/"+data[i].filename;
+								}
 							}
 						}
 					})
@@ -225,7 +237,6 @@ function actually_populate(array){
   height: 150px;
   float: left;
   background-color: white;
- <!-- outline: 1px solid black;-->
   position:relative;
 }
 
@@ -258,7 +269,7 @@ btn-primary.solved {
 					{% endif %}
 				{% endwith %}
 		</div>
-		
+			
 	</div>
 <div class="middle">
     <div id="nothing_to_see_here" class="hidden">
