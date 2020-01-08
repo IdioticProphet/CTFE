@@ -3,3 +3,4 @@
 __pycache__
 ctfengineenv
 .vs
+/app/static/files/*
