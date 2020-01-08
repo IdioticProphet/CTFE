@@ -4,7 +4,7 @@ __pycache__
 ctfengineenv
 .vs
 /app/static/uploads/*
-/app/static/js/bootstrap*.js
+/app/static/js/bootstrap*
 /app/static/js/j*
 /app/static/js/popper.min.js
 *~
