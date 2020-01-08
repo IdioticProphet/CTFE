@@ -7,3 +7,4 @@ ctfengineenv
 /app/static/js/bootstrap*.js
 /app/static/js/j*
 /app/static/js/popper.min.js
+*~
