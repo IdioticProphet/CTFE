@@ -17,4 +17,4 @@ Only tested on stock ubuntu18.04+ as it stands, light changes to the playbook wo
 
 ` ssh-copy-id -p SSHPORT root@SERVERIP `
 
-` ansible-playbook -u 'root' install_server.yaml `
+` ansible-playbook -u 'root' -i "SERVERIPADDRES," install_server.yaml `
