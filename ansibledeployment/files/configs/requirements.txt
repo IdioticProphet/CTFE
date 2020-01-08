@@ -1,0 +1,8 @@
+flask
+flask-wtf
+records
+requests
+pymysql
+mysqlclient
+flask-markdown
+uwsgi

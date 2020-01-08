@@ -1,0 +1,8 @@
+server {
+    server_name ctf.hhscyber.com www.ctf.hhscyber.com;
+    
+    location  {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/serverpc/ctfengine/ctfengine.sock
+    }
+}

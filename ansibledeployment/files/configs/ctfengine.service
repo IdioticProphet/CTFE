@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance for ctfengine
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/serverpc/ctfengine
+Environment="PATH=/home/serverpc/ctfengine/ctfeenv/bin"
+ExecStart=/home/serverpc/ctfengine/ctfeenv/bin/uwsgi --ini ctfengine.ini
+
+[Install]
+WantedBy=multi-user.target
