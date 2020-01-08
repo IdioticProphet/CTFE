@@ -5,3 +5,8 @@ ctfengineenv
 .vs
 *Env
 /*Env
+/app/static/uploads/*
+/app/static/js/bootstrap*
+/app/static/js/j*
+/app/static/js/popper.min.js
+*~
