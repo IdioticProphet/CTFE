@@ -31,6 +31,7 @@ class ProblemForm(Form):
         category = SelectField("Category", choices=[("Basic", "Basic"), ("Advanced", "Advanced"), ("Omega", "Omega")], validators=[DataRequired()])
         solution_flag = StringField("Flag", validators=[DataRequired()])
         file_field = FileField("File Upload")
+        docker_file_field = FileField("Docker File Upload")
         submit = SubmitField("Submit")
 
 class TeamForm(Form):
