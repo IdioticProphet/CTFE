@@ -203,12 +203,3 @@ def post_file(filename):
 @api.route("/files/<path:path>", methods=["GET"])
 def get_file(path):
     return send_from_directory(os.path.abspath(UPLOAD_DIRECTORY), path, as_attachment=True)
-
-@api.route("/docker/upload/<filename>", methods=["POST"])
-def docker_upload(filename):
-    if "/" in filename:
-        return jsonify({"response": 400, "description": "Bad Filename"})
-    with open(os.path.join("./app/static/dockerfiles", filename), "wb") as fp:
-        fp.write(request.data)
-        return jsonify({"response": 200, "description": "File Created"})
-

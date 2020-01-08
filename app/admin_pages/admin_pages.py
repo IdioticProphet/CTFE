@@ -37,7 +37,9 @@ def admin1():
 @admin.route("/")
 @admin.route("/dashboard")
 def admin_dash():
-        return render_template("admin_dash.html")
+        problems = requests.get("https://ctf.hhscyber.com/api/problems").text["data"]
+        problem_ids = [x["unique_id"] for x in problems]
+        return render_template("admin_dash.html", problem_ids=problem_ids)
 
 
 @admin.route("/token")
@@ -52,17 +54,14 @@ def create_problem():
                 if sql_connection.is_up():
                         UPLOAD_FOLDER = "./app/static/uploads/"
                         f = request.files["file_field"]
-                        dockerfile = request.files["dockerfile"]
                         if allowed_file(f.filename):
                                 f.save(os.path.join(UPLOAD_FOLDER, secure_filename(f.filename)))
-                        if allowed_file(docker.filename):
-                                f.save(os.path.join(UPLOAD_FOLDER, secure_filename(dockerfile.filename)))
 
                         form.unique_id.data = provision_number()+1
                         
                         #Updating the Problem Database
-                        sql_command = "INSERT INTO problems(problem_name, short_summary, summary, unique_id, category, filename, dockerfile) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category, :filename,:dockerfile)"
-                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data, filename=f.filename, dockerfile="f.dockerfile")
+                        sql_command = "INSERT INTO problems(problem_name, short_summary, summary, unique_id, category, filename) VALUES (:problem_name, :short_summary, :summary, :unique_id, :category, :filename)"
+                        sql_connection.connection.query(sql_command, problem_name=form.problem_name.data, short_summary=form.short_summary.data, summary=form.summary.data, unique_id=form.unique_id.data, category=form.category.data, filename=f.filename)
                         #Updating the Flag Database
                         try:
                                 sql_command = "INSERT INTO problem_check(unique_id, flag, score) VALUES (:unique_id, :flag, :points)"

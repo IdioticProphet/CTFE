@@ -85,7 +85,8 @@ body {
 		{{ form.file_field(placeholder = "File") }}<br>
 		</div>
 		<div class = "form-group">
-		{{ form.docker_file_field(placeholder = "DOCKER FILE. DONT UPLOAD UNLESS YOU KNOW WHAT YOURE DOING") }}<br>
+		{{ form.docker_file_field(placeholder = "Docker Required") }}<br>
+		{{ form.docker_file_field.label }}<br>
 		</div>
 		<div class = "form-group"><br>
 		{{ form.submit(id="coolButton", class="btn btn-primary", type="submit", value="Submit") }}

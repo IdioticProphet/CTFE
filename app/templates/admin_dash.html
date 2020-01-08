@@ -9,7 +9,7 @@
 	display: grid;
 				grid-template:
 					[row1-start] "left middle right"[row1-end]
-					/ 20% auto 20%;
+					/ 10% auto 10%;
 			    word-wrap: break-word;
 				word-break: break-all;
 }
@@ -27,6 +27,48 @@
 	place-self: center;
 }
 </style>
+<script>
+Vue.component('problem_list',{
+		delimiters: ['!!!','!!!'],
+		data: function() {
+			return {
+				items: [],
+				name: null,
+
+			}
+		},
+		
+		props: ["problem_id"],
+
+		template: `
+				<li class="list-group-item"> !!! name !!! </li>
+	`,
+		
+		created: function() {
+			this.fetchData(this.unique_id);
+		},
+		
+		methods: {
+			fetchData: function(button_id) {
+				var self = this;
+				fetch('./api/problems')
+					.then(response => {
+						var response = response.json();
+						return response;
+					})
+					.then(json => {
+						var data = json.data;
+						var length = data.length;
+						for (var i = 0; i<length; i++) {
+							if (data[i].unique_id == problem_id) {
+								name = data[i].name
+							}
+						}
+					})
+				}
+			},	
+		});
+</script>
 {%endblock%}
 {%block content%}
 <div class="a jumbotron">
@@ -37,6 +79,14 @@
 </div>
 <div class="grid-middle">
 <a href="/admin/create_problem" class="button btn btn-primary"> Create a New Problem </a>
+<ul class="list-group" id="problem-list">
+	{% for id in problem_ids %}
+		<problem_list id={{id}} problem_id={{id}}></problem_list>
+		<script>
+			new Vue({ el: "{{id}}"}) 
+		</script>
+	{% endfor %}
+</ul>
 </div>
 <div class="grid-right">
 </div>
