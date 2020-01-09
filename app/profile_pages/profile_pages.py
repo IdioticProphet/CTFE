@@ -30,7 +30,7 @@ def profile():
             team_name = data.first().team_name
             team_members = data.first().members
             team_points = data.first().score
-            team = tnp(session["team_id"], team_name, team_members)
+            team = tnp(session["team_id"], team_name, team_members, team_points)
         return render_template('profile.html', team=team, form=form)
 
 @profile_blueprint.route("/join_team", methods=["POST", "GET"])

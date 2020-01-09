@@ -12,8 +12,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-left: 3em;
+    margin-right: 3em;
 }
 .profile-boxes > .inside-left {
     width: 45%;
@@ -39,7 +39,6 @@
 }
 .profile-picture-box {
     grid-area: pfpicture;
-    margin: 10px;
     display: flex;
     justify-content: center;
     background-image: url("{{url_for('static', filename=name)}}");
@@ -213,8 +212,8 @@ function sleep(ms) {
 </script>
 {% endblock %}
 </head>
-<body style="min-width: 950px; width: 100%;">
 {% block content %}
+<body style="min-width: 950px; width: 100%;">
 </div>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
