@@ -13,13 +13,10 @@
 	  <script> window.jQuery || document.write(` <script type="text/javascript" src="{{ url_for('static' , filename='js/jquery-slim.min.js') }}"><\/script> `)</script>
       
       <style>
-	  html {
-  min-height: 100%;
-		}
+
 body {
   font-size: 16px;
   margin-bottom: 60px; /* Margin bottom by footer height */
-  padding-top: 60px;
 }
 .footer {
   position: absolute;
@@ -58,11 +55,16 @@ body {
     display:block;
     margin-right: .3em;
 }
+@media only screen and (max-width: 480px) {
+	body {
+		font-size: 10px !important;
+	}
+}
       </style>
       {% endblock %}
    </head>
    
-   <nav style="margin-bottom: 20px" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+   <nav class="navbar navbar-dark bg-dark top">
 {%block body%}
          <a class="navbar-brand" href="/">
             <span class="logo-eye logo-image"></span> PTC-CTF
