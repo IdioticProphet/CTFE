@@ -258,16 +258,14 @@ btn-primary.solved {
 	<div class="left sidebar">
             Filters:
 		<div class="fltrs" id="myBtnContainer">
-				{% with records = category_names %}
-					{% if records %}
-						{% for record in records %}
-                        <div class="custom-control custom-checkbox">
-						    <input class="custom-control-input" id="ck{{record.category}}" type="checkbox"  onchange="check_box_function(this, '{{record.category}}')" checked>
-							<label class="custom-control-label" for="ck{{record.category}}"> {{record.category}}</label><br>
+			{% if category_names %}
+						{% for category in category_names %}
+                        			    <div class="custom-control custom-checkbox">
+						    <input class="custom-control-input" id="ck{{category}}" type="checkbox"  onchange="check_box_function(this, '{{category}}')" checked>
+							<label class="custom-control-label" for="ck{{category}}"> {{category}}</label><br>
                         </div>
                         {% endfor %}
 					{% endif %}
-				{% endwith %}
 		</div>
 			
 	</div>
@@ -275,25 +273,25 @@ btn-primary.solved {
     <div id="nothing_to_see_here" class="hidden">
         <i class="far fa-frown"></i> Nothing to see here
     </div>
-	<div class="mid">
-	{% for record in problems %}
+	<div style="width:100%;">
             {% for category in category_names %} 
-                <h4>{{ category }}</h4>
+	    <h4 class="filterItem {{category}} show">{{ category }}</h4>
                 <hr>
-                {% for problem in record %}
-                    {% if problem.category == category %}
-				<div class="challenge-entry filterItem {{problem.category}}">
-					<div class="item-c" id="item-c{{problem.unique_id}}">
-					<problem-button problem_solved={{"btn-success" if check_func(problem.unique_id, solved_questions) == 1 else "btn-primary"}} unique_id="{{ problem.unique_id }}" problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
+		<div class="mid">
+		{% for problem in problems %}
+                   		{% if problem.category == category %}
+					<div class="challenge-entry filterItem {{problem.category}}">
+						<div class="item-c" id="item-c{{problem.unique_id}}">
+							<problem-button problem_solved={{"btn-success" if check_func(problem.unique_id, solved_questions) == 1 else "btn-primary"}} unique_id="{{ problem.unique_id }}" problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
+						</div>
+						<script>
+							new Vue({ el: "#item-c{{problem.unique_id}}"}) 
+						</script>
 					</div>
-					<script>
-					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
-					</script>
-				</div>
-                    {% endif %}
-				{% endfor %}
-			{% endfor %}
+                   		{% endif %}
 		{% endfor %}
+		</div>
+	{% endfor %}
 	</div>
 </div>
 	<div class="right">

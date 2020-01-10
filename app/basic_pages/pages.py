@@ -134,7 +134,8 @@ def dashboard():
                 output_data = sql_connection.connection.query(sql_command)
                 if output_data is not None:
                     dashboard_data = output_data.all()
-                    category_names = sql_connection.connection.query("SELECT DISTINCT category FROM problems").all()
+                    category_records = sql_connection.connection.query("SELECT DISTINCT category FROM problems").all()
+                    category_names = [ x.category for x in category_records ]
                     sql_command = f"SELECT unique_id FROM team_solves WHERE team_id=:team_id"
                     solved_questions = sql_connection.connection.query(sql_command, team_id=session['team_id']).all()
                     current_app.jinja_env.globals.update(check_func=check_func)
