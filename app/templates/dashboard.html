@@ -276,10 +276,12 @@ btn-primary.solved {
         <i class="far fa-frown"></i> Nothing to see here
     </div>
 	<div class="mid">
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	{% for record in messages %}
-			{% for problem in record %}
+	{% for record in problems %}
+            {% for category in category_names %} 
+                <h4>{{ category }}</h4>
+                <hr>
+                {% for problem in record %}
+                    {% if problem.category == category %}
 				<div class="challenge-entry filterItem {{problem.category}}">
 					<div class="item-c" id="item-c{{problem.unique_id}}">
 					<problem-button problem_solved={{"btn-success" if check_func(problem.unique_id, solved_questions) == 1 else "btn-primary"}} unique_id="{{ problem.unique_id }}" problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
@@ -288,11 +290,10 @@ btn-primary.solved {
 					new Vue({ el: "#item-c{{problem.unique_id}}"}) 
 					</script>
 				</div>
-				
+                    {% endif %}
+				{% endfor %}
 			{% endfor %}
 		{% endfor %}
-	{% endif %}
-	{% endwith %}
 	</div>
 </div>
 	<div class="right">

@@ -134,12 +134,11 @@ def dashboard():
                 output_data = sql_connection.connection.query(sql_command)
                 if output_data is not None:
                     dashboard_data = output_data.all()
-                    flash(dashboard_data)
                     category_names = sql_connection.connection.query("SELECT DISTINCT category FROM problems").all()
                     sql_command = f"SELECT unique_id FROM team_solves WHERE team_id=:team_id"
                     solved_questions = sql_connection.connection.query(sql_command, team_id=session['team_id']).all()
                     current_app.jinja_env.globals.update(check_func=check_func)
-                    return render_template("dashboard.html", category_names=category_names, solved_questions=solved_questions)
+                    return render_template("dashboard.html", problems=dashboard_data, category_names=category_names, solved_questions=solved_questions)
                 else:
                     flash("Awkward... where are the ctf problems...")
                     return redirect("/404")
