@@ -6,8 +6,6 @@
 
   tasks:
 
-
-
     - name: ensuring serverpc user is created
       user:
         name: serverpc

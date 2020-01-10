@@ -67,7 +67,7 @@ def flag_submit():
         team_name = sql_connection.connection.query(team_name_command, team=team).first().team_name
 
         #obtain the problem name of what was solved
-        solved_problem_name_cmd = f"SELECT problem_name FROM ctf_problems WHERE unique_id=:problem"
+        solved_problem_name_cmd = f"SELECT problem_name FROM problems WHERE unique_id=:problem"
         solved_problem_name = sql_connection.connection.query(solved_problem_name_cmd, problem=problem).first().problem_name
 
         #update the scoring feed after a solve
