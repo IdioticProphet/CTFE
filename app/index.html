@@ -1,0 +1,145 @@
+{% extends "topindex.html"%}
+{% block head %}
+<head>
+<script>
+// Set the date we're counting down to
+var countDownDate = new Date("Apr 20, 2020 12:00:00").getTime();
+
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  // Get today's date and time
+  var now = new Date().getTime();
+
+  // Find the distance between now and the count down date
+  var distance = countDownDate - now;
+
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  if (seconds < 10) { seconds = "0"+seconds; }
+  if (hours < 10) { hours = "0"+hours; }
+  if (minutes < 10) { minutes = "0"+minutes; }
+  
+  document.getElementById("days").innerHTML = days;
+  document.getElementById("hours").innerHTML = hours;
+  document.getElementById("minutes").innerHTML = minutes;
+  document.getElementById("seconds").innerHTML = seconds;
+  // Display the result in the element with id="demo"
+  //document.getElementById("demo").innerHTML = days + "d:" + hours + "h:"
+  //+ minutes + "m:" + seconds + "s";
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("demo").innerHTML = "NOW";
+  }
+}, 1000);
+</script>
+<style>
+body {
+    font-size: 16px;
+}
+.big-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.clock-parent {
+    display: grid;
+    grid-template:
+					[row1-start] "a day hour minute second b" auto[row1-end]
+					/ 10% 20% 20% 20% 20% 10%;
+    font-size: 3em;
+    justify-items: center;
+    text-align: center;
+    
+   }
+   .day {
+        grid-area: day;
+        font-size: 1em;
+        margin-bottom: 0;
+   }
+   .hour {
+        grid-area: hour;
+        font-size: 1em;
+        margin-bottom: 0;
+   }
+   .minute {
+        grid-area: minute;
+        font-size: 1em;
+        margin-bottom: 0;
+   }
+   .second {
+        grid-area: second;
+        font-size: 1em;
+        margin-bottom: 0;
+   }
+ .clock-class {
+    margin: .6em;
+    margin-bottom: 0;
+    display:flex;
+    flex-direction: column;
+ }
+ .big-text{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+ }
+ .small-text{
+    display:flex;
+    justify-content: center;
+    font-size: .4em;
+    padding-left: .5em;
+    padding-right: .5em;
+ }
+ .number {
+    display: flex;
+    justify-content:center;
+    
+ }
+ 
+</style>
+{{super()}}
+{%endblock%}
+</head>
+{%block content%}
+<div class="jumbotron jumbotron-fluid">
+<div class="container">
+<div class="big-text">Protect The Castle CTF starts in...</div>
+<hr>
+<div class="big-center">
+<div class="clock-parent" id="clock-div">
+<div class="clock-class day"> 
+    <span  id="days"></span>
+    <div class="small-text">Days</div>
+</div>
+<div class="clock-class hour"> 
+    <span id="hours"></span>
+    <div class="small-text">Hours</div>
+</div>
+<div class="clock-class minute"> 
+    <span id="minutes"></span>
+    <div class="small-text">Minutes</div>
+</div>
+<div class="clock-class second"> 
+    <span id="seconds"></span>
+    <div class="small-text">Seconds</div> 
+</div>
+</div>
+</div>
+<div style="display:flex; justify-content:center; padding-top:10px;"><b>Will you be ready?</b></div>
+</div>
+</div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+{%endblock%}

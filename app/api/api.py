@@ -5,6 +5,11 @@ from operator import itemgetter
 from itsdangerous import Signer
 from werkzeug.security import check_password_hash, generate_password_hash
 
+def get_admin_ids():
+    sql_connection = SQL_Connect()
+    admin_ids = sql_connection.connection.query("SELECT id FROM admins").all()
+    return admin_ids
+
 api = Blueprint("api", "api", url_prefix="/api")
 
 @api.route("/problems")
@@ -163,8 +168,10 @@ def join_team():
 @api.route("/change_password")
 def change_password():
     user_id = session["user_id"]
+    if user_id in get_admin_ids():
+        user_id = request.args.get("user_id")
     current_password = request.args.get("current_password")
-    new_password = request.args.get("new_password")
+    new_password = generate_password_hash(request.args.get("new_password"))
     if not current_password or not user_id or not current_password:
         return jsonify({"response": 400, "description": "Missing Arguments"})
     sql_connection = SQL_Connect()

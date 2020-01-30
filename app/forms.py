@@ -45,3 +45,6 @@ class ChangeTeamForm(Form):
         team_password = PasswordField("Password to Join")
         submit = SubmitField("Submit")
         
+class ForgotForm(Form):
+        username = StringField("Username")
+        submit = SubmitField("Submit")

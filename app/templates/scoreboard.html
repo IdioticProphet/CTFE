@@ -46,57 +46,21 @@ async function chartGen() {
 function drawChart(xarr, yarr) {
 // xarr is the list of teams
 // yarr is the time and overall new point value
-    var data = new google.visualization.DataTable();
-    data.addColumn('date', 'Time')
-    Object.keys(xarr).forEach( function(item) {
-        data.addColumn('number', item);
-    });
-    var array_length = Object.keys(xarr).length+1;
-    var temparr = new Array(array_length)
-    temparr[0] = new Date(2019, 11, 1,12,0,0,0);
-    for(let i=1; i<array_length; i++){
-        temparr[i] = 0;
-    }
-    var dat = [];
-    dat.push(temparr);
-    yarr.forEach( function(item) {
-        var xdata = new Array(array_length);
-        var arrpos = xarr[item.team_name]+1;
-        xdata[0] = new Date(item.when_solved); // This will be a proper timestamp soon
-        xdata[arrpos] = item.new_total;  
-        dat.push(xdata)
-    });
-    console.log(dat);
-    data.addRows(dat);
-    var options = { 
-        title: "Scoreboard",
-        hAxis: { // X Axis
-            title: 'Time'
+    var ctx = document.getElementById("Chart");
+    var myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: []
         },
-        vAxis: { // Y Axis
-            title: 'Score'
-        },  
-    }
+        options: options
+    });
     
-    var chart = new google.charts.Line(document.getElementById('chart_div'))
-    chart.draw(data, google.charts.Line.convertOptions(options));
-    google.visualization.events.addListener(chart, 'error', function (googleError) {
-      google.visualization.errors.removeError(googleError.id);
-      document.getElementById("error_msg").innerHTML = "Message removed = '" + googleError.message + "'";
-  });
+    
+
 }
 
 async function resizeChart () {
     await chartGen();
-}
-if (document.addEventListener) {
-    window.addEventListener('resize', resizeChart);
-}
-else if (document.attachEvent) {
-    window.attachEvent('onresize', resizeChart);
-}
-else {
-    window.resize = resizeChart;
 }
 </script>
 <style>
@@ -143,7 +107,7 @@ body {
 <div class="container-thing">
 <div class="left"></div>
 <div class="middle">
-        <div id="chart_div" style="width: 90%; height: 70%;"></div>
+       <canvas id="chart" width="400" height="400"></canvas>
 </div>
 <div class="right"></div>
 </div>

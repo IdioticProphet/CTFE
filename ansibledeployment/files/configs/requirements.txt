@@ -1,5 +1,6 @@
 flask
 flask-wtf
+Flask_Session
 records
 requests
 pymysql

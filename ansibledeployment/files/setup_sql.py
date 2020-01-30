@@ -42,6 +42,8 @@ def create_tables():
                         email varchar(100) NOT NULL UNIQUE,
                         password varchar(94) NOT NULL,
                         team_id int(11) DEFAULT 0,
+                        is_verified boolean DEFAULT FALSE,
+                        is_active boolean DEFAULT FALSE,
                         primary key (id)
                 )
                 """

@@ -37,8 +37,13 @@ def admin1():
 @admin.route("/")
 @admin.route("/dashboard")
 def admin_dash():
-        problems = requests.get("https://ctf.hhscyber.com/api/problems").text["data"]
+        problems = requests.get("/api/problems").text["data"]
         problem_ids = [x["unique_id"] for x in problems]
+        sql_connection = SQL_Connect()
+        ######
+        ids = [sql_connection.connection.query("SELECT id FROM users")]
+        
+        user_ids = sql_connection.connection.query
         return render_template("admin_dash.html", problem_ids=problem_ids)
 
 
@@ -94,3 +99,4 @@ def edit_problem():
                         flash("Something went wrong with the query. The Id is probably wrong")
                         return render_template("edit_problem.html")
                 return render_template("edit_problem.html", problem_query=data.first())
+        

@@ -1,9 +1,22 @@
 {% extends "topindex.html"%}
 {% block head %}
+{{super()}}
+{%endblock%}
+{%block content%}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
+	{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<html>
 <head>
 <script>
 // Set the date we're counting down to
-var countDownDate = new Date("Apr 20, 2020 12:00:00").getTime();
+var countDownDate = new Date("Apr 15, 2020 12:00:00").getTime();
 
 // Update the count down every 1 second
 var x = setInterval(function() {
@@ -22,31 +35,28 @@ var x = setInterval(function() {
   if (seconds < 10) { seconds = "0"+seconds; }
   if (hours < 10) { hours = "0"+hours; }
   if (minutes < 10) { minutes = "0"+minutes; }
+  // Display the result in the element with id="demo"
   
   document.getElementById("days").innerHTML = days;
   document.getElementById("hours").innerHTML = hours;
   document.getElementById("minutes").innerHTML = minutes;
   document.getElementById("seconds").innerHTML = seconds;
-  // Display the result in the element with id="demo"
-  //document.getElementById("demo").innerHTML = days + "d:" + hours + "h:"
-  //+ minutes + "m:" + seconds + "s";
+  // If the count down is finished, write some text
   if (distance < 0) {
     clearInterval(x);
-    document.getElementById("demo").innerHTML = "NOW";
+    document.getElementById("demo").innerHTML = "EXPIRED";
   }
 }, 1000);
 </script>
+<link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Germania+One">
 <style>
-body {
-    font-size: 16px;
-}
-.big-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-}
-.clock-parent {
+    body{
+        font-size: 16px;
+        background-color: #8082b1;
+        color: #0f101b;
+	text-align: center;
+    }
+    .clock-parent {
     display: grid;
     grid-template:
 					[row1-start] "a day hour minute second b" auto[row1-end]
@@ -76,12 +86,113 @@ body {
         font-size: 1em;
         margin-bottom: 0;
    }
- .clock-class {
+   .clock-class {
     margin: .6em;
     margin-bottom: 0;
     display:flex;
     flex-direction: column;
- }
+    }
+    
+	.cool-container {
+			padding-top:15px;
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+			height: 50%;
+			padding-bottom:30px;
+		}
+		.cool-container > .left {
+			display:flex;
+			justify-content: center;
+            align-content: center;
+			width:25%;
+			align: left;
+		}
+		.cool-container > .right {
+			display:flex;
+			justify-content: center;
+			width:25%;
+			align: right;
+            align-content: center;
+		}
+		.cool-container > .middle {
+			display: flex;
+			width: 50%;
+			justify-content: center;
+			align-content: center;
+		}
+		.boxed {
+			border: 3px solid green;
+		}
+		.color-box {
+			background-color: #dcd7e6;
+		}
+		.right-bottom {
+  			margin-right: 10px;
+			width: 300px;
+			padding: 10px;
+		}
+		.left-bottom {
+			position: absolute;
+  			margin-left: 10px;
+			width: 300px;
+			padding: 10px;
+		}
+		.center-topbottom {
+			width: 100%;
+		}
+		.center-botbottom {
+			margin: auto;
+			width: 50%;
+			padding: 10px;
+		}
+		.title-div {
+			display: table-cell;
+			vertical-align: middle;
+			text-align: center;
+			font-family: 'Germania One';
+			font-size: 5rem;
+		}
+		.card {
+   		    min-width: 300px;
+			background-color: #dcd7e6;
+		}
+		.cards {
+			width:700px;
+			min-width: 300px;
+			background-color: #5d638c
+		}
+		.category-card {
+			max-width: 300px;
+			padding-bottom: 20px;
+			margin-bottom: 20px !important;
+		}
+		.card-deck {
+			margin-left: 2rem;
+			margin-right: 2rem;
+			justify-content: center;
+		}
+		.card-title {
+			padding: 10px 0;
+			margin-bottom: 0px;
+			text-align: center;
+			display: inline-block;
+		}
+		.card-header {
+			margin-bottom:0px;
+		}
+		.welcome-box {
+			display:flex;
+			justify-content: center;
+		}
+        }
+.big-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
  .big-text{
     display: flex;
     justify-content: center;
@@ -100,17 +211,128 @@ body {
     justify-content:center;
     
  }
- 
+@media only screen and (max-width: 480px) {
+    img{
+        display:none;
+    }
+    .card{
+        min-width:0px;
+        }
+    .title-div {
+        font-size: 2.5rem;
+        }
+    h4 {
+        font-size:1rem;
+    }
+    }
 </style>
-{{super()}}
-{%endblock%}
-</head>
-{%block content%}
-<div class="jumbotron jumbotron-fluid">
-<div class="container">
-<div class="big-text">Protect The Castle CTF starts in...</div>
+  </head>
+  <body>
+
+		<div class="cool-container">
+				<div class="left">
+					<img src="{{url_for("static", filename="pictures/logo.png")}}" height="160" style="align-self:center;">
+				</div>
+
+				<div class="middle">
+					<div class="title-div">Protect the Castle CTF</div>
+				</div>
+
+				<div class="right">
+					<img src="{{url_for("static", filename="pictures/protect.png")}}" height="160" align="right" style="align-self:center;">
+				</div>
+		</div>
+	<div class="welcome-box">
+		<div class="card color-box">
+			<h4 class="center-topbottom">
+				Welcome to the homepage for Protect the Castle CTF, hosted by HHS-Cyber.
+			</h4>
+		</div>
+</div>
+
 <hr>
-<div class="big-center">
+<div class="container">
+<div class="card color-box" style="width:100%;">
+	<div class="card-header"><h4>Purpose</h4></div>
+	<div class="card-body">PTCCTF was created for educational purposes by the
+		Huntsville High School Cybersecurity department, HHS-Cyber. Through
+		competition, HHS-Cyber hopes to introduce competitors to new topics,
+		allow for tool experimentation, and increase interest in cybersecurity.</div>
+</div>
+</div>
+<hr>
+<!-- Stuff like categories and junk will go here in some type of cool format, have fun ig id -->
+<div class="container">
+<div class="card color-box" style="width:100%;">
+	<div class="card-header" style="margin-bottom:20px"><h4>Problem Types</h4></div>
+
+<div class="card-deck">
+	<div style="display:flex; justify-content:center; align-content:center;">
+		<img src="https://svgsilh.com/png/1297380.png" height="160" width="136" padding-bottom="100px" align="right">
+		</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Networking
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems centered around using networking commands and tools
+		</div>
+	</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Web
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems focused on navigating and penetrating websites
+		</div>
+	</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Forensics
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems involving deciphering large amounts of data
+		</div>
+	</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Crypto
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems about uncovering hidden information from files
+		</div>
+	</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Code
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems related to understanding and changing programming and code
+		</div>
+	</div>
+	<div class="card category-card" style="background-color:#5d638c">
+		<h5 class="card-title">
+			Misc.
+		</h5>
+		<hr style="height:2px">
+		<div class="card-text">
+			Problems that do not fall in a specific category
+		</div>
+	</div>
+<img src="https://svgsilh.com/png/2027573.png" height="160" padding-left="50px" align="right">
+</div>
+</div>
+<hr style="height:5px">
+<div class="container">
+<div class="card color-box" style="width:100%;">
+	<div class="card-header"><h4>Countdown Timer</h4></div>
+	<div class="card-body">Protect the Castle CTF starts in... </div>
+
 <div class="clock-parent" id="clock-div">
 <div class="clock-class day"> 
     <span  id="days"></span>
@@ -129,17 +351,22 @@ body {
     <div class="small-text">Seconds</div> 
 </div>
 </div>
+
+<div style="padding-bottom:20px;"> Will you be ready come April 15th, 2020? </div>
 </div>
-<div style="display:flex; justify-content:center; padding-top:10px;"><b>Will you be ready?</b></div>
+</div>
+<hr style="height:5px">
+<div class="container">
+<div class="card color-box" style="width:100%;">
+	<div class="card-header"><h4>Sponsors</h4></div>
+	<div class="card-body">We are currently looking for sponsors for Protect the
+		Castle CTF. If you are considering sponsoring our event, or just want more
+		information, email us at hhscyber.ctf@gmail.com</div>
 </div>
 </div>
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-	{% for message in messages %}
-	<div class="alert alert-info" style="margin: 1rem;"> {{ message }} </div>
-	{% endfor %}
-{% endif %}
-{% endwith %}
 
 
+
+  </body>
+</html>
 {%endblock%}

@@ -1,8 +1,14 @@
 from flask import Flask, Blueprint, session, render_template, flash, redirect, current_app
-from ..forms import LoginForm, RegisterForm, FlagForm, ProblemForm
+from ..forms import LoginForm, RegisterForm, FlagForm, ProblemForm, ForgotForm
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from ..db import *
+from ..email import Emailer
+from flask_mail import Message
+from app import mail
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired
+import random, string
 
 pages = Blueprint("pages", __name__, url_prefix="/")
 
@@ -18,6 +24,54 @@ def check_func(unique_id, solved_list):
 @pages.route("/index")
 def index():
         return render_template("index.html")
+
+@pages.route("/verify_email/<verify>")
+def verify_email(verify):
+        if not verify:
+                return redirect("/index")
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        try:
+                name = s.loads(verify, max_age=1800)
+                sql_connection = SQL_Connect()
+                sql_connection.connection.query("UPDATE users SET is_verified=True, is_active=True WHERE name=:name", name=name)
+                
+        except SignatureExpired:
+                flash("Your key has expired!")
+                return redirect("/index")
+                
+@pages.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+        form = ForgotForm()    
+        if form.validate_on_submit():
+            sql_connection = SQL_Connect()
+            data = sql_connection.connection.query("SELECT is_verified, email FROM users WHERE name=:uname", uname=form.username.data)
+            is_verified = data.first().is_verified
+            if not is_verified:
+                flash("Your email is not verified, ask an admin for assistance.")
+                return render_template("/forgot_password.html", form=form)
+            email = data.first().email
+            s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+            signed_uname = s.dumps(form.username.data)
+            body = f"ctf.hhscyber.com/reset_password/{signed_uname}"
+            msg = Emailer("Reset Password", "ctf@hhscyber.com", [email], body)
+            return(f"An email containing a password reset link has been sent to the email associated with {form.username.data}. It will expire in 30 minutes")
+        else:
+            return render_template("forgot_password.html", form=form)
+
+@pages.route("/reset_password/<key>")
+def reset_password(key):
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        if not key:
+            return redirect("/index")
+        try:
+            value = s.loads(key, max_age=1800)
+            letters = string.ascii_lowercase + string.ascii_uppercase
+            new_password = "".join([random.choice(letters) for i in range(30)])
+            sql_connection = SQL_Connect()
+            sql_connection.connection.query("UPDATE users SET password=:password WHERE name=:username", password=generate_password_hash(new_password), username=value)
+            return(f"Your new password is: {new_password}")
+        except SignatureExpired:
+            return "Your key is expired!"
 
 @pages.route("/login", methods=["GET", "POST"])
 def login():
@@ -35,6 +89,22 @@ def login():
                         if not check_password_hash(user_data[0].password, form.password.data):
                                 flash("Invalid Password.")
                                 return redirect("/login")
+                        
+                        #If the found user is deactivated
+                        sql_command = "SELECT is_active, is_verified FROM users WHERE name=:username"
+                        data= sql_connection.connection.query(sql_command, username=form.username.data).first()
+                        if not data.is_active:
+                                flash("Your account is inactive. Verify your email or ask an admin to unlock")
+                                return redirect("/index")
+                        
+                        if not data.is_verified:
+                                flash("You need to verify your email to continue.")
+                                s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+                                serialized_link = "ctf.hhscyber.com/verify_email/" + s.dumps(form.username.data)
+                                user_email = sql_connection.connection.query("SELECT email FROM users WHERE name=:username", username=form.username.data).first().email
+                                Emailer("Verify your email", "ctf.hhscyber@gmail.com", [user_email], serialized_link)
+                                return redirect("/index")
+                        
                         #We have the username now
                         session["username"] = form.username.data
 
@@ -108,6 +178,9 @@ def register():
                         password = generate_password_hash(form.password.data)
                         command_output = sql_connection.connection.query(sql_command, name=form.username.data, display_name=form.real_name.data, email=form.email.data.lower(), password=password)
                         flash(f"you have registered {form.username.data}, display name of {form.real_name.data} you will get a confirmation email sent to {form.email.data}. You can now log in")
+                        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+                        signed_link = s.dumps(form.username.data)
+                        Emailer("Verify Email", "ctf.hhscyber@gmail.com", [form.email.data], signed_link).send_email()
                         sql_connection.disconnect()
                         return redirect('index')
                 else:
