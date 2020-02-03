@@ -285,7 +285,8 @@ btn-primary.solved {
 							<problem-button problem_solved={{"btn-success" if check_func(problem.unique_id, solved_questions) == 1 else "btn-primary"}} unique_id="{{ problem.unique_id }}" problem_name="{{ problem.problem_name }}" problem_summary="{{ problem.short_summary }}"></problem-button>
 						</div>
 						<script>
-							new Vue({ el: "#item-c{{problem.unique_id}}"}) 
+							new Vue({ el: "#item-c{{problem.unique_id}}"});
+                            console.log("XD");
 						</script>
 					</div>
                    		{% endif %}

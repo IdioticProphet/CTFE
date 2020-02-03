@@ -13,6 +13,7 @@ def create_tables():
                         problem_name varchar(255) NOT NULL UNIQUE,
                         short_summary varchar(255) NOT NULL UNIQUE,
                         summary text NOT NULL,
+                        filename varchar(255),
                         category varchar(255)
                 )
                 """

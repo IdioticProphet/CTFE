@@ -10,3 +10,4 @@ ctfengineenv
 /app/static/js/j*
 /app/static/js/popper.min.js
 *~
+config.py

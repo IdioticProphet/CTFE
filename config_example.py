@@ -12,7 +12,6 @@ class Config:
         MAIL_PORT = 465
         MAIL_USE_TLS = False
         MAIL_USE_SSL = True
-        MAIL_USERNAME = "ctf.hhscyber@gmail.com"
-        MAIL_PASSWORD = "3wuGXGtmPqc8ixs"
-        #MAIL_PASSWORD = "jtrskguwqgieczyu"
+        MAIL_USERNAME = ""
+        MAIL_PASSWORD = ""
         basedir = os.path.abspath
