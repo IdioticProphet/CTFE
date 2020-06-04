@@ -1,4 +1,4 @@
-# CTE
+# CTFE
 CTFD but the D is an E and its crappier, and build for PTC-CTF based on Flask and 
 
 ## Requirements
@@ -8,7 +8,7 @@ A domain to host it on, defined in ansibledeployment/files/ctfe, replace ctf.hhs
 
 port 80 needs to be forwarded 
 
-PLANED: Automatic Certbot deployment to run it over 443
+TODO: Automatic Certbot deployment to run it over 443
 
 SSH enabled
 
